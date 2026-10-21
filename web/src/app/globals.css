@@ -1433,3 +1433,68 @@ input[aria-invalid="true"] {
   color: var(--mute);
   font: 500 13px var(--font-mono);
 }
+
+/* ---- how it's built ---- */
+.prose.wide {
+  max-width: 980px;
+}
+.arch {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 12px;
+}
+.arch-t {
+  fill: var(--chalk);
+  font: 700 18px var(--font-text);
+}
+.arch-s {
+  fill: var(--mute);
+  font: 500 13px var(--font-text);
+}
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.stack-grid h3 {
+  margin-bottom: 4px;
+  font: 800 16px var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.decisions {
+  list-style: none;
+  padding-left: 0 !important;
+}
+.counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.counts div {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.big-n {
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--chalk);
+}
+.counts small {
+  color: var(--mute);
+  font-size: 14px;
+}
+.links {
+  list-style: none;
+  padding-left: 0 !important;
+}
+@media (max-width: 760px) {
+  .stack-grid,
+  .counts {
+    grid-template-columns: 1fr;
+  }
+}
