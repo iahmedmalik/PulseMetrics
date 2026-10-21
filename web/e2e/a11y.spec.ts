@@ -5,7 +5,7 @@ import { signUpViaApi } from "./helpers";
 // One sweep over every screen, empty states included: WCAG 2.2 AA with axe, no sideways scrolling, a heading,
 // and (on a phone) touch targets of at least 44 px. Pages with data have their own scans in their own specs.
 
-const SIGNED_IN = ["/", "/innings", "/funnel", "/ab", "/install", "/more"];
+const SIGNED_IN = ["/", "/innings", "/funnel", "/ab", "/install", "/ask", "/more"];
 const PUBLIC = ["/sign-in", "/sign-up", "/privacy", "/how-its-built"];
 
 async function check(page: import("@playwright/test").Page, path: string) {

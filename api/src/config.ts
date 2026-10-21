@@ -8,6 +8,10 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   CRON_SECRET: z.string().min(16, "CRON_SECRET must be at least 16 characters"),
   WEB_ORIGIN: z.string().url("WEB_ORIGIN must be a full address such as https://pulsemetrics.vercel.app"),
+  // "Ask your data" is off unless a key is set. Never commit the key: it lives in Render's settings.
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  ASK_MODEL: z.string().min(1).optional(),
+  ASK_DAILY_LIMIT: z.coerce.number().int().min(1).max(500).optional(),
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.string().default("development"),
 });

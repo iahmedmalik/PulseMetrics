@@ -1,6 +1,7 @@
 import { toNodeHandler } from "better-auth/node";
 import express, { type ErrorRequestHandler, type Express } from "express";
 import type { Pool } from "pg";
+import type { AskModel } from "./ask/ask";
 import type { Auth } from "./auth";
 import type { Config } from "./config";
 import type { Db } from "./db/client";
@@ -12,7 +13,15 @@ import { trackRouter } from "./routes/track";
 
 // Everything the real server hands to the app. Tests can build the app without it (health check only)
 // or with a real local database.
-export type AppContext = { config: Config; db: Db; ingestPool: Pool; auth: Auth; limits?: Limits };
+export type AppContext = {
+  config: Config;
+  db: Db;
+  ingestPool: Pool;
+  auth: Auth;
+  limits?: Limits;
+  /** The model behind "Ask your data". Left out when no key is set: the route then answers that it is not set up. */
+  ask?: { model: AskModel; dailyLimit: number };
+};
 
 export function createApp(ctx?: AppContext): Express {
   const app = express();

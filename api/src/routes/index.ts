@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { AppContext } from "../app";
+import { askRouter } from "./ask";
 import { requireUser } from "./require-user";
 import { sitesRouter } from "./sites";
 
@@ -13,6 +14,7 @@ export function createRoutes(ctx: AppContext): Router {
   });
 
   router.use("/sites", sitesRouter(ctx));
+  router.use("/ask", askRouter(ctx));
 
   return router;
 }

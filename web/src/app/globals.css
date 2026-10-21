@@ -1500,3 +1500,73 @@ input[aria-invalid="true"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Ask your data ---- */
+.ask {
+  display: grid;
+  gap: 18px;
+}
+.ask textarea {
+  width: 100%;
+  min-height: 84px;
+  resize: vertical;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--card2);
+  color: var(--chalk);
+  font: inherit;
+}
+.ask-examples {
+  margin-top: 12px;
+}
+.ask-examples li {
+  padding: 0;
+}
+.chip-btn {
+  padding: 5px 13px;
+  border: 0;
+  border-radius: 99px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  transition:
+    background var(--dur-quick) var(--ease),
+    color var(--dur-quick) var(--ease);
+}
+.chip-btn:hover:not(:disabled) {
+  background: var(--card2);
+  color: var(--chalk);
+}
+.chip-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.ask-answer {
+  animation: enter var(--dur) var(--ease) both;
+}
+.ask-text {
+  max-width: 62ch;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--chalk);
+  white-space: pre-wrap;
+  text-wrap: pretty;
+}
+.ask-tools {
+  margin-top: 6px;
+}
+.ask-warn {
+  margin-top: 16px;
+}
+@media (max-width: 760px) {
+  .ask-text {
+    font-size: 17px;
+  }
+  .ask-examples li,
+  .chip-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
