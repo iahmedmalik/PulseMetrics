@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { LOCAL_ONLY, anonId, createSiteViaApi, ownerDb, signUpViaApi } from "./helpers";
+import { LOCAL_ONLY, anonId, createSiteViaApi, ingestDb, ownerDb, signUpViaApi } from "./helpers";
 
 // Innings: the scoreboard and the daily active browsers chart, with events put in on known days.
 
@@ -124,6 +124,48 @@ test.describe("innings", () => {
     await bars.nth(12).scrollIntoViewIfNeeded();
     await bars.nth(12).hover(); // yesterday is the second last of 14
     await expect(page.getByText(`${label(daysAgo(1))}: 4 browsers`)).toBeVisible();
+  });
+
+  test("says nothing has arrived in the live list when there are no events", async ({ page }) => {
+    await createSiteViaApi(page, "Quiet app");
+    await page.goto("/innings");
+    await expect(page.getByText("Nothing yet. The first event appears here within a few seconds of arriving.")).toBeVisible();
+  });
+
+  test("a new event shows in the live list within seconds, without reloading @core", async ({ page }) => {
+    const site = await createSiteViaApi(page, "QueueCare");
+    const db = await ingestDb();
+    try {
+      await db.query("select record_event($1, $2, $3)", [site.key, anonId(), "queue_joined"]);
+      await page.goto("/innings");
+      const list = page.getByRole("list", { name: "Latest events" });
+      await expect(list.getByText("queue_joined")).toBeVisible();
+      await expect(list.getByRole("listitem")).toHaveCount(1);
+
+      // an event arrives while the page is open
+      await db.query("select record_event($1, $2, $3)", [site.key, anonId(), "status_viewed"]);
+      await expect(list.getByText("status_viewed")).toBeVisible({ timeout: 15_000 });
+      await expect(list.getByRole("listitem")).toHaveCount(2);
+      await expect(list.getByRole("listitem").first()).toContainText("status_viewed"); // newest first
+    } finally {
+      await db.end();
+    }
+  });
+
+  test("the live list shows fixed event names and only 4 characters of a browser id", async ({ page }) => {
+    const site = await createSiteViaApi(page, "QueueCare");
+    const db = await ingestDb();
+    const anon = anonId();
+    try {
+      await db.query("select record_event($1, $2, $3)", [site.key, anon, "queue_joined"]);
+    } finally {
+      await db.end();
+    }
+    await page.goto("/innings");
+    const item = page.getByRole("list", { name: "Latest events" }).getByRole("listitem").first();
+    await expect(item).toContainText(`browser ${anon.slice(0, 4)}…`);
+    await expect(item).toContainText("just now");
+    expect(await item.textContent()).not.toContain(anon);
   });
 
   test("with two sites a switcher picks which one is shown, and remembers it", async ({ page }) => {

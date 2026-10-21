@@ -2,6 +2,7 @@ import { dayLabel, summarize } from "@pulse/core";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroArt } from "@/components/HeroArt";
+import { LiveEvents } from "@/components/LiveEvents";
 import { ManhattanChart } from "@/components/ManhattanChart";
 import { NoSite } from "@/components/NoSite";
 import { parseRange, RangeTabs } from "@/components/RangeTabs";
@@ -22,6 +23,8 @@ export default async function InningsPage({ searchParams }: { searchParams: Prom
   const res = await apiFetch(`/v1/sites/${site.id}/daily?days=${range}`);
   if (!res.ok) throw new ApiDown();
   const daily = (await res.json()) as Daily;
+  const recentRes = await apiFetch(`/v1/sites/${site.id}/recent`);
+  const recent = recentRes.ok ? ((await recentRes.json()) as { events: { id: number; name: string; browser: string; at: string }[] }).events : [];
   const s = summarize(daily.days, daily.today);
 
   return (
@@ -66,17 +69,20 @@ export default async function InningsPage({ searchParams }: { searchParams: Prom
         </div>
       </div>
 
-      <div className="card">
-        <h2>
-          Daily active browsers <span>{range} days</span>
-        </h2>
-        {s.hasData ? (
-          <ManhattanChart days={daily.days} today={daily.today} siteName={site.name} />
-        ) : (
-          <p className="note">
-            No events in these {range} days. <Link href="/install">Install the snippet</Link> and they will appear here.
-          </p>
-        )}
+      <div className="grid2">
+        <div className="card">
+          <h2>
+            Daily active browsers <span>{range} days</span>
+          </h2>
+          {s.hasData ? (
+            <ManhattanChart days={daily.days} today={daily.today} siteName={site.name} />
+          ) : (
+            <p className="note">
+              No events in these {range} days. <Link href="/install">Install the snippet</Link> and they will appear here.
+            </p>
+          )}
+        </div>
+        <LiveEvents key={site.id} siteId={site.id} initial={recent} />
       </div>
     </section>
   );

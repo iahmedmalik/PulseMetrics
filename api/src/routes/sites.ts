@@ -47,6 +47,7 @@ const funnelQuery = z.object({
 });
 
 export type FunnelView = { range: number; steps: { step: number; name: string; people: number }[] };
+export type RecentView = { events: { id: number; name: string; browser: string; at: string }[] };
 export type NamesView = { names: { name: string; count: number; firstSeen: string }[] };
 export type DailyView = { range: number; today: string; days: { day: string; people: number }[] };
 
@@ -190,6 +191,27 @@ export function sitesRouter(ctx: AppContext): Router {
         return { range: days, steps: rows.rows.map((r) => ({ step: Number(r.step), name: r.name, people: Number(r.people) })) };
       });
       res.json(view);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // The latest events, newest first. A browser shows as its first 4 characters only: enough to tell two visitors apart, not to follow one.
+  router.get("/:id/recent", async (req, res, next) => {
+    try {
+      const id = idSchema.safeParse(req.params.id);
+      if (!id.success) throw new HttpError(404, "That site was not found.");
+      const limit = z.coerce.number().int().min(1).max(50).default(10).safeParse(req.query.limit);
+      if (!limit.success) throw new HttpError(400, "The request is not valid: limit must be from 1 to 50");
+      const view: RecentView = await asOwner(ctx.db, req.user!.id, async (tx) => {
+        const found = await tx.execute(sql`select 1 from sites where id = ${id.data}`);
+        if (found.rows.length === 0) throw new HttpError(404, "That site was not found.");
+        const rows = await tx.execute<{ id: string; name: string; browser: string; created_at: Date }>(
+          sql`select id, name, left(anon_id, 4) as browser, created_at from events where site_id = ${id.data} order by id desc limit ${limit.data}`,
+        );
+        return { events: rows.rows.map((r) => ({ id: Number(r.id), name: r.name, browser: r.browser, at: new Date(r.created_at).toISOString() })) };
+      });
+      res.set("Cache-Control", "no-store").json(view);
     } catch (err) {
       next(err);
     }

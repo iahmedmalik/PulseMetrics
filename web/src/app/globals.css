@@ -1226,3 +1226,50 @@ input[aria-invalid="true"] {
     font-size: 44px;
   }
 }
+
+/* ---- live events list ---- */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.tick {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tick li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+  font: 500 14px var(--font-mono);
+  animation: slide-in 0.7s var(--ease) both;
+}
+.tick li small {
+  grid-column: 2;
+  color: var(--mute);
+  font-size: 12px;
+}
+.tick .dot {
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--trace);
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+}
+@media (max-width: 760px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
