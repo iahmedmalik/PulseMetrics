@@ -939,3 +939,175 @@ select:focus {
     display: inline;
   }
 }
+
+/* ---- funnel ---- */
+.fun {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.channel {
+  fill: url(#channel-fill);
+  stroke: var(--bar);
+  stroke-width: 2;
+  animation: enter 1s var(--ease) both;
+}
+svg.art .channel {
+  fill: var(--card2);
+}
+.drop {
+  fill: var(--trace);
+  animation: fall 2.6s ease-in infinite;
+}
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(70px);
+  }
+}
+.flab {
+  fill: var(--chalk);
+  font: 600 22px var(--font-mono);
+}
+.fsm {
+  fill: var(--mute);
+  font: 500 14px var(--font-text);
+}
+.fred {
+  fill: var(--trace-t);
+  font: 600 15px var(--font-mono);
+}
+.funnel-narrow {
+  display: none;
+}
+.funnel-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.funnel-bars li {
+  animation: enter var(--dur) var(--ease) both;
+}
+.fb-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-weight: 600;
+}
+.fb-head b {
+  font-size: 22px;
+}
+.fb-track {
+  height: 12px;
+  margin-top: 6px;
+  background: var(--well);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.fb-track i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--bar), var(--acc));
+  border-radius: 6px;
+  transform-origin: left;
+  animation: grow-x 1s var(--ease) both;
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+.fb-left {
+  margin-top: 4px;
+  color: var(--trace-t);
+  font: 600 14px var(--font-mono);
+}
+.say {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.say p {
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
+.say b {
+  color: var(--acc-t);
+}
+.say .note {
+  background: transparent;
+  border-color: var(--acc);
+}
+.steps-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.steps-form > h2 {
+  margin: 0;
+}
+.step-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.step-rows li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.step-rows label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.step-rows label b {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 2px solid var(--bar);
+  font: 600 14px var(--font-mono);
+}
+.step-rows select {
+  font: 600 16px var(--font-text);
+}
+.btn.small {
+  flex: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 4px 14px;
+  font-size: 14px;
+}
+.link-btn.plain {
+  margin: 14px 0 0;
+}
+.funnel-card .collapse {
+  margin-top: 4px;
+}
+@media (max-width: 760px) {
+  .funnel-wide {
+    display: none;
+  }
+  .funnel-narrow {
+    display: block;
+  }
+}

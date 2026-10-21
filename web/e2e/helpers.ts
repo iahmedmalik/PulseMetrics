@@ -50,3 +50,34 @@ export async function ingestDb(): Promise<Client> {
 
 /** A random browser id the way the snippet makes one. */
 export const anonId = () => randomBytes(10).toString("hex");
+
+/** Today's date in Pakistan, as the server counts days. */
+export function pakistanToday(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Karachi" }).format(new Date());
+}
+
+/**
+ * Puts journeys into a site: `reached[k]` browsers got as far as step k (so reached must go down).
+ * Everyone who reached step k did steps 1..k in order, a minute apart, around noon today in Pakistan.
+ */
+export async function seedJourneys(siteId: string, names: string[], reached: number[]): Promise<void> {
+  const db = await ownerDb();
+  try {
+    const base = new Date(`${pakistanToday()}T07:00:00Z`).getTime();
+    const depth = new Map<number, number>();
+    for (let i = 0; i < reached[0]!; i++) {
+      let d = 0;
+      while (d < names.length && i < reached[d]!) d++;
+      depth.set(i, d);
+    }
+    for (const [, d] of depth) {
+      const anon = anonId();
+      for (let k = 0; k < d; k++) {
+        await db.query("insert into events (site_id, anon_id, name, created_at) values ($1, $2, $3, $4)", [siteId, anon, names[k], new Date(base + k * 60_000)]);
+        await db.query("update sites set event_count = event_count + 1 where id = $1", [siteId]);
+      }
+    }
+  } finally {
+    await db.end();
+  }
+}

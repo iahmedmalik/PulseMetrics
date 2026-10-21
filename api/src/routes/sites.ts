@@ -1,3 +1,4 @@
+import { isValidEventName } from "@pulse/core";
 import { randomBytes } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { Router } from "express";
@@ -30,6 +31,23 @@ const dailyQuery = z.object({
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "to must look like 2026-10-21").optional(),
 });
 
+const funnelQuery = z.object({
+  steps: z
+    .string()
+    .transform((v) => v.split(",").map((x) => x.trim()))
+    .pipe(
+      z
+        .array(z.string().refine(isValidEventName, "each step must be a fixed event name such as queue_joined"))
+        .min(2, "A funnel needs 2 to 6 steps.")
+        .max(6, "A funnel needs 2 to 6 steps.")
+        .refine((a) => new Set(a).size === a.length, "Each step must be a different event."),
+    ),
+  days: z.coerce.number().int().refine((n) => [7, 14, 30].includes(n), "days must be 7, 14 or 30").default(14),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "to must look like 2026-10-21").optional(),
+});
+
+export type FunnelView = { range: number; steps: { step: number; name: string; people: number }[] };
+export type NamesView = { names: { name: string; count: number; firstSeen: string }[] };
 export type DailyView = { range: number; today: string; days: { day: string; people: number }[] };
 
 async function dailyFor(tx: Tx, siteId: string): Promise<number[]> {
@@ -141,6 +159,54 @@ export function sitesRouter(ctx: AppContext): Router {
             coalesce(${to ?? null}::date, (now() at time zone 'Asia/Karachi')::date)
           ) d order by d.day`);
         return { range: days, today: today.rows[0]!.d, days: rows.rows.map((r) => ({ day: r.day, people: Number(r.people) })) };
+      });
+      res.json(view);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // How many people got to each step, in order, in the last 7, 14 or 30 days (Pakistan time).
+  router.get("/:id/funnel", async (req, res, next) => {
+    try {
+      const id = idSchema.safeParse(req.params.id);
+      if (!id.success) throw new HttpError(404, "That site was not found.");
+      const query = funnelQuery.safeParse(req.query);
+      if (!query.success) throw new HttpError(400, `The request is not valid: ${query.error.issues[0]?.message ?? "check the values"}`);
+      const { steps, days, to } = query.data;
+
+      const view: FunnelView = await asOwner(ctx.db, req.user!.id, async (tx) => {
+        const found = await tx.execute(sql`select 1 from sites where id = ${id.data}`);
+        if (found.rows.length === 0) throw new HttpError(404, "That site was not found.");
+        const lastDay = sql`coalesce(${to ?? null}::date, (now() at time zone 'Asia/Karachi')::date)`;
+        const stepList = sql`array[${sql.join(steps.map((n) => sql`${n}::text`), sql`, `)}]`;
+        const rows = await tx.execute<{ step: number; name: string; people: string }>(sql`
+          select step, name, people from funnel(
+            ${id.data}::uuid,
+            ${stepList},
+            ((${lastDay} - ${days - 1}::int)::timestamp at time zone 'Asia/Karachi'),
+            ((${lastDay} + 1)::timestamp at time zone 'Asia/Karachi')
+          )`);
+        return { range: days, steps: rows.rows.map((r) => ({ step: Number(r.step), name: r.name, people: Number(r.people) })) };
+      });
+      res.json(view);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // The kinds of event this site has sent, in the order they were first seen: a good guess at the order of a journey.
+  router.get("/:id/names", async (req, res, next) => {
+    try {
+      const id = idSchema.safeParse(req.params.id);
+      if (!id.success) throw new HttpError(404, "That site was not found.");
+      const view: NamesView = await asOwner(ctx.db, req.user!.id, async (tx) => {
+        const found = await tx.execute(sql`select 1 from sites where id = ${id.data}`);
+        if (found.rows.length === 0) throw new HttpError(404, "That site was not found.");
+        const rows = await tx.execute<{ name: string; count: string; first_seen: Date }>(
+          sql`select name, count(*) as count, min(created_at) as first_seen from events where site_id = ${id.data} group by name order by min(created_at), name limit 50`,
+        );
+        return { names: rows.rows.map((r) => ({ name: r.name, count: Number(r.count), firstSeen: new Date(r.first_seen).toISOString() })) };
       });
       res.json(view);
     } catch (err) {
