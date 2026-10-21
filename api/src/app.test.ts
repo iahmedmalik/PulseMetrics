@@ -11,7 +11,9 @@ describe("API foundation", () => {
   it("answers the pinger on /health", async () => {
     const res = await request(app).get("/health");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: "ok" });
+    expect(res.body.status).toBe("ok");
+    // how many requests were refused, with no detail about who sent them
+    expect(res.body.refused).toEqual({ rateLimited: expect.any(Number), since: expect.any(String) });
   });
 
   it("does not announce that it is Express", async () => {

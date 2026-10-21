@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "pg";
 import { asOwner, connect, denied, newAnon, newId, seedEvent, seedOwner, seedSite, urls } from "./helpers";
@@ -133,7 +134,7 @@ describe("owners only see their own data (row-level security)", () => {
 
   it("the owner can rename a site and replace its key; the old key then stops working", async () => {
     const site = await seedSite(owner, alice, "Rotating");
-    const newKey = "a".repeat(24);
+    const newKey = randomBytes(12).toString("hex"); // random: the test database keeps its data between runs
     await asOwner(app, alice, async () => {
       await app.query("update sites set name = 'Renamed', public_key = $2 where id = $1", [site.id, newKey]);
     });
