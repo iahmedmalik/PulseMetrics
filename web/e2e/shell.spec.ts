@@ -1,9 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { BASE, signUpViaApi } from "./helpers";
 
 // The design shell: header with the pulse line, navigation, phone tab bar, motion and accessibility.
 
 test.describe("the shell", () => {
+  test.beforeEach(async ({ page }) => {
+    await signUpViaApi(page);
+  });
+
   test("shows the brand, the page heading and the navigation @core", async ({ page, isMobile }) => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "PulseMetrics" }).first()).toBeVisible();
@@ -65,6 +70,10 @@ test.describe("the shell", () => {
 });
 
 test.describe("motion", () => {
+  test.beforeEach(async ({ page }) => {
+    await signUpViaApi(page);
+  });
+
   test("the page rises in with the shared enter animation", async ({ page }) => {
     await page.goto("/");
     const name = await page.locator(".page").first().evaluate((el) => getComputedStyle(el).animationName);
@@ -72,9 +81,10 @@ test.describe("motion", () => {
   });
 
   test("with reduced motion the page only fades, with no travel", async ({ browser }) => {
-    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const context = await browser.newContext({ reducedMotion: "reduce", baseURL: BASE });
     const page = await context.newPage();
-    await page.goto(`${process.env.E2E_BASE_URL ?? "http://127.0.0.1:3420"}/`);
+    await signUpViaApi(page);
+    await page.goto("/");
     const name = await page.locator(".page").first().evaluate((el) => getComputedStyle(el).animationName);
     expect(name).toBe("fade");
     const pulseRuns = await page.locator(".pulse-bg path:not(.base)").first().evaluate((el) => getComputedStyle(el).display);

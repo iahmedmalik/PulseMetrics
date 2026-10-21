@@ -1,7 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3420;
-const base = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${PORT}`;
+const WEB_PORT = 3420;
+const API_PORT = 4000; // the dashboard is built to forward /backend/* to port 4000 (see next.config.ts)
+const DB_PORT = 54349;
+const base = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${WEB_PORT}`;
+const local = !process.env.E2E_BASE_URL;
 
 // Every test runs in desktop Chrome. Layout, touch and accessibility checks also run in a 375 px
 // phone view, and the core flows (@core) also in desktop Edge (also Chromium, so only those).
@@ -10,6 +13,7 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: true,
+  workers: 2,
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"]],
   use: { baseURL: base, trace: "retain-on-failure" },
@@ -22,8 +26,36 @@ export default defineConfig({
     },
     { name: "desktop-edge", use: { ...devices["Desktop Edge"], channel: "msedge" }, grep: /@core/ },
   ],
-  // Tests run against a production build: `npm run build` first.
-  webServer: process.env.E2E_BASE_URL
-    ? undefined
-    : { command: `npx next start -p ${PORT}`, url: base, reuseExistingServer: true, timeout: 120_000 },
+  // The whole stack runs on this computer: a real Postgres, the API, and the dashboard (a production
+  // build, so run `npm run build` first). Point E2E_BASE_URL at a deployed site to test that instead.
+  webServer: local
+    ? [
+        { command: "npx tsx scripts/e2e-db.ts", cwd: "../api", port: DB_PORT, reuseExistingServer: true, timeout: 240_000 },
+        {
+          command: "npx tsx src/server.ts",
+          cwd: "../api",
+          stdout: "pipe",
+          stderr: "pipe",
+          url: `http://127.0.0.1:${API_PORT}/health`,
+          reuseExistingServer: true,
+          timeout: 60_000,
+          env: {
+            PORT: String(API_PORT),
+            NODE_ENV: "development",
+            DATABASE_URL_APP: `postgres://pm_app:pm_app_local@127.0.0.1:${DB_PORT}/pulse`,
+            DATABASE_URL_INGEST: `postgres://pm_ingest:pm_ingest_local@127.0.0.1:${DB_PORT}/pulse`,
+            BETTER_AUTH_SECRET: "e2e-secret-e2e-secret-e2e-secret-e2e-secret",
+            CRON_SECRET: "e2e-cron-secret-12345",
+            WEB_ORIGIN: base,
+          },
+        },
+        {
+          command: `npx next start -p ${WEB_PORT}`,
+          url: base,
+          reuseExistingServer: true,
+          timeout: 120_000,
+          env: { API_URL: `http://127.0.0.1:${API_PORT}` },
+        },
+      ]
+    : undefined,
 });

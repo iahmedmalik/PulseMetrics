@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { MainNav, TabBar } from "./NavLinks";
+import { SignOutButton } from "./SignOutButton";
 import { FieldRings, LogoMark, PulseBackdrop } from "./PulseBackdrop";
 
 // The frame around every page: header with the pulse line, content, footer, and the phone tab bar.
@@ -19,9 +20,12 @@ export function Shell({ children, signedIn = true }: { children: ReactNode; sign
             How it&apos;s built
           </Link>
           {signedIn ? (
-            <Link href="/install" className="btn primary">
-              New site
-            </Link>
+            <>
+              <SignOutButton />
+              <Link href="/install" className="btn primary">
+                New site
+              </Link>
+            </>
           ) : (
             <Link href="/sign-in" className="btn primary">
               Sign in

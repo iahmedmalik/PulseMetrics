@@ -10,7 +10,7 @@ export function validateBody<T>(schema: ZodType<T>): RequestHandler {
     if (!result.success) {
       const first = result.error.issues[0];
       const where = first && first.path.length > 0 ? ` (${first.path.join(".")})` : "";
-      return next(new HttpError(400, `The request is not valid${where}.`));
+      return next(new HttpError(400, `The request is not valid${where}: ${first?.message ?? "check the values and try again"}`));
     }
     req.body = result.data;
     next();
