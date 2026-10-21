@@ -24,6 +24,13 @@ type Row = { id: string; name: string; public_key: string; event_count: string; 
 
 const nameSchema = z.object({ name: z.string().trim().min(1, "Give the site a name.").max(60, "Keep the name under 60 characters.") }).strict();
 const idSchema = z.string().uuid();
+const dailyQuery = z.object({
+  days: z.coerce.number().int().refine((n) => [7, 14, 30].includes(n), "days must be 7, 14 or 30").default(14),
+  // the last day to show (Pakistan time); today when left out. Tests use it to look at a fixed week.
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "to must look like 2026-10-21").optional(),
+});
+
+export type DailyView = { range: number; today: string; days: { day: string; people: number }[] };
 
 async function dailyFor(tx: Tx, siteId: string): Promise<number[]> {
   const res = await tx.execute<{ people: string }>(sql`
@@ -108,6 +115,34 @@ export function sitesRouter(ctx: AppContext): Router {
         return view(tx, row);
       });
       res.json({ site });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Browsers per day, in Pakistan time. The last day is usually today, which is still counting.
+  router.get("/:id/daily", async (req, res, next) => {
+    try {
+      const id = idSchema.safeParse(req.params.id);
+      if (!id.success) throw new HttpError(404, "That site was not found.");
+      const query = dailyQuery.safeParse(req.query);
+      if (!query.success) throw new HttpError(400, `The request is not valid: ${query.error.issues[0]?.message ?? "check the values"}`);
+      const { days, to } = query.data;
+
+      const view: DailyView = await asOwner(ctx.db, req.user!.id, async (tx) => {
+        const found = await tx.execute(sql`select 1 from sites where id = ${id.data}`);
+        if (found.rows.length === 0) throw new HttpError(404, "That site was not found.");
+        const today = await tx.execute<{ d: string }>(sql`select to_char((now() at time zone 'Asia/Karachi')::date, 'YYYY-MM-DD') as d`);
+        const rows = await tx.execute<{ day: string; people: string }>(sql`
+          select to_char(d.day, 'YYYY-MM-DD') as day, d.people
+          from daily_active(
+            ${id.data}::uuid,
+            coalesce(${to ?? null}::date, (now() at time zone 'Asia/Karachi')::date) - ${days - 1}::int,
+            coalesce(${to ?? null}::date, (now() at time zone 'Asia/Karachi')::date)
+          ) d order by d.day`);
+        return { range: days, today: today.rows[0]!.d, days: rows.rows.map((r) => ({ day: r.day, people: Number(r.people) })) };
+      });
+      res.json(view);
     } catch (err) {
       next(err);
     }
