@@ -6,6 +6,7 @@ import type { Config } from "./config";
 import type { Db } from "./db/client";
 import { HttpError } from "./http-error";
 import { createRoutes } from "./routes";
+import { trackRouter } from "./routes/track";
 
 // Everything the real server hands to the app. Tests can build the app without it (health check only)
 // or with a real local database.
@@ -19,6 +20,9 @@ export function createApp(ctx?: AppContext): Express {
 
   // Sign-in must be mounted before the JSON parser: Better Auth reads the raw request itself.
   if (ctx) app.all("/v1/auth/*splat", toNodeHandler(ctx.auth));
+
+  // The public tracking door has its own tiny body limit and open CORS, so it is mounted before the rest.
+  if (ctx) app.use("/v1/track", trackRouter(ctx));
 
   app.use(express.json({ limit: "16kb" }));
 
