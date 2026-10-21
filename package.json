@@ -1,0 +1,24 @@
+{
+  "name": "pulsemetrics",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Product analytics for small apps: events, funnels, daily active users and A/B tests, without cookies or personal data",
+  "workspaces": [
+    "packages/*",
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}
