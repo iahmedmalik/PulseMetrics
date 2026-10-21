@@ -1,0 +1,485 @@
+/* PulseMetrics design system: a floodlit night match. See .impeccable/surfaces/app.md.
+   One motion vocabulary for everything that appears or is pressed:
+   ease-out expo, 0.6 s enter with a 14 px rise, a draw-in for lines, a fade-only path for reduced motion. */
+
+:root {
+  /* ground and surfaces */
+  --bg1: #03100b;
+  --bg2: #0b2a1c;
+  --card: #0d2a1e;
+  --card2: #133a28;
+  --line: #2a5d44;
+  --grid: #1c4631;
+  --grid2: #143626;
+  --plate: #0a2218;
+  --well: #071a12;
+  /* ink */
+  --chalk: #e9f1e6;
+  --mute: #a4bfac;
+  /* signal colours: trace is the pen, bar is the bars, acc is the one action */
+  --trace: #ff5a60;
+  --trace-t: #ff9a9e;
+  --bar: #3fae7a;
+  --acc: #ebb53f;
+  --acc-t: #f4cf7c;
+  --on-acc: #14160f;
+
+  /* motion tokens */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 0.6s;
+  --dur-quick: 0.3s;
+  --rise: 14px;
+  --press: 0.96;
+
+  /* type */
+  --font-display: var(--font-barlow-condensed), "Barlow Condensed", system-ui, sans-serif;
+  --font-text: var(--font-hanken-grotesk), "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-red-hat-mono), "Red Hat Mono", ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--bg1);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg1), var(--bg2) 70%) fixed;
+  color: var(--chalk);
+  font: 16px/1.5 var(--font-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--acc);
+  color: #111;
+}
+
+/* the parts the browser draws by default belong to the design too */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+input,
+textarea {
+  caret-color: var(--acc);
+}
+:focus-visible {
+  outline: 3px solid var(--acc-t);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+a {
+  color: var(--acc-t);
+  text-underline-offset: 3px;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1 {
+  font: 800 clamp(40px, 5.2vw, 68px) / 1 var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+h2 {
+  font: 800 22px var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- shell: header, content, phone tab bar ---- */
+.shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 28px;
+  background: color-mix(in srgb, var(--bg1) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.pulse-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  pointer-events: none;
+  mask-image: linear-gradient(90deg, transparent 40%, #000 56%, #000 76%, transparent 90%);
+}
+.pulse-bg path {
+  fill: none;
+  stroke: var(--trace);
+  stroke-width: 2;
+  stroke-dasharray: 60 340;
+  animation: run 6s linear infinite;
+}
+.pulse-bg path.base {
+  stroke: var(--line);
+  stroke-dasharray: none;
+  animation: none;
+  opacity: 0.7;
+}
+@keyframes run {
+  to {
+    stroke-dashoffset: -400;
+  }
+}
+.logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--chalk);
+  text-decoration: none;
+  font: 800 25px var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.logo svg {
+  width: 36px;
+  height: 22px;
+}
+.main-nav {
+  position: relative;
+  display: flex;
+  gap: 4px;
+}
+.main-nav a {
+  border-radius: 99px;
+  padding: 7px 15px;
+  color: var(--mute);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background var(--dur-quick) var(--ease),
+    color var(--dur-quick) var(--ease);
+}
+.main-nav a:hover {
+  color: var(--chalk);
+}
+.main-nav a[aria-current="page"] {
+  background: var(--card2);
+  color: var(--acc-t);
+}
+.header-actions {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content {
+  position: relative;
+  isolation: isolate;
+  /* the decorative rings are wider than a phone: clip them, never scroll sideways */
+  overflow-x: clip;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 30px 28px 90px;
+}
+.page {
+  animation: enter var(--dur) var(--ease) both;
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise));
+  }
+}
+.field-rings {
+  position: absolute;
+  left: 50%;
+  top: -60px;
+  width: 1180px;
+  max-width: none;
+  transform: translateX(-50%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+.field-rings ellipse {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 3s var(--ease) forwards;
+}
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 1.6s var(--ease) 0.15s forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop 0.6s var(--ease) both;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+.foot {
+  margin-top: 40px;
+  color: var(--mute);
+  font-size: 14px;
+  text-align: center;
+}
+.tab-bar {
+  display: none;
+}
+
+/* ---- shared parts ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  border-radius: 99px;
+  padding: 8px 18px;
+  color: var(--chalk);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform var(--dur-quick) var(--ease),
+    background var(--dur-quick) var(--ease);
+}
+.btn:hover {
+  background: var(--card2);
+}
+.btn:active {
+  transform: scale(var(--press));
+}
+.btn.primary {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: var(--on-acc);
+}
+.btn.primary:hover {
+  background: var(--acc-t);
+}
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.card {
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 14px 34px -18px #000a;
+}
+.card > h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.card > h2 span {
+  font: 400 13px var(--font-text);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--mute);
+}
+.chip {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 10px;
+  border: 1.5px dashed var(--acc);
+  border-radius: 99px;
+  color: var(--acc-t);
+  font: 600 12px var(--font-mono);
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.sub {
+  max-width: 46ch;
+  margin-top: 10px;
+  color: var(--mute);
+  text-wrap: pretty;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.art {
+  width: 100%;
+  height: auto;
+}
+label {
+  display: grid;
+  gap: 4px;
+  color: var(--mute);
+  font-size: 13px;
+}
+input,
+select {
+  width: 100%;
+  background: var(--well);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  color: var(--chalk);
+  padding: 9px 12px;
+  font: 600 18px var(--font-mono);
+}
+input:focus,
+select:focus {
+  border-color: var(--acc);
+  outline: none;
+}
+.note {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  animation: enter var(--dur) var(--ease) both;
+}
+.note.bad {
+  border-color: var(--trace);
+}
+
+/* ---- phone: its own layout, not a squeezed laptop ---- */
+@media (max-width: 760px) {
+  .shell-header {
+    height: 58px;
+    gap: 10px;
+    padding: 0 14px;
+  }
+  .main-nav,
+  .header-actions .btn:not(.primary) {
+    display: none;
+  }
+  .logo {
+    font-size: 22px;
+  }
+  .content {
+    padding: 20px 16px 110px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero .art {
+    order: -1;
+    max-height: 150px;
+  }
+  .field-rings {
+    width: 700px;
+  }
+  .tab-bar {
+    display: flex;
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 20;
+    padding: 6px 4px calc(10px + env(safe-area-inset-bottom));
+    background: var(--card);
+    border-top: 1px solid var(--line);
+  }
+  .tab-bar a {
+    flex: 1;
+    min-height: 48px;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 6px 0;
+    border-radius: 10px;
+    color: var(--mute);
+    font-size: 12px;
+    text-decoration: none;
+    transition:
+      background var(--dur-quick) var(--ease),
+      color var(--dur-quick) var(--ease);
+  }
+  .tab-bar a[aria-current="page"] {
+    background: var(--card2);
+    color: var(--acc-t);
+  }
+  .tab-bar svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ---- reduced motion: fade only, no travel, lines and numbers shown at their final state ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01s !important;
+  }
+  .page,
+  .note {
+    animation: fade 0.2s linear both;
+  }
+  .draw,
+  .field-rings ellipse {
+    stroke-dashoffset: 0;
+  }
+  .pulse-bg path:not(.base) {
+    display: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
