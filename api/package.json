@@ -5,21 +5,27 @@
   "description": "PulseMetrics API: event tracking, reports and sign-in (Express + TypeScript)",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --env-file-if-exists=.env.local src/server.ts",
     "build": "tsup",
     "start": "node dist/server.js",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev:db": "tsx scripts/dev-db.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env.local scripts/migrate.ts"
   },
   "dependencies": {
     "@pulse/core": "*",
+    "drizzle-orm": "^0.45.4",
     "express": "^5.3.0",
+    "pg": "^8.23.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^22.19.0",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.2.1",
+    "embedded-postgres": "^17.10.0-beta.17",
     "supertest": "^7.3.1",
     "tsup": "^9.0.0",
     "tsx": "^4.23.15",
