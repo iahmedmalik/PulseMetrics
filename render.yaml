@@ -1,0 +1,26 @@
+# Render Blueprint for the API. Secrets are never written here: `sync: false` means
+# Render asks for the value in its dashboard, and the value stays there.
+services:
+  - type: web
+    name: pulsemetrics-api
+    runtime: node
+    region: singapore # next to the Neon database (aws-ap-southeast-1)
+    plan: free
+    buildCommand: npm ci && npm run build -w api
+    startCommand: npm run start -w api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATABASE_URL_APP
+        sync: false
+      - key: DATABASE_URL_INGEST
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: API_PUBLIC_URL
+        sync: false

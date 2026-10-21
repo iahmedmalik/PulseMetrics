@@ -13,11 +13,14 @@
   },
   "dependencies": {
     "@pulse/core": "*",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^22.19.0",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
     "tsup": "^9.0.0",
     "tsx": "^4.23.15",
     "vitest": "^5.0.5"

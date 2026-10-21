@@ -1,4 +1,7 @@
-import { APP_NAME } from "@pulse/core";
+import { createApp } from "./app";
 
-// The real server arrives with issue #2; this keeps the build and the workspace link honest.
-console.log(`${APP_NAME} API: scaffold only`);
+const port = Number(process.env.PORT ?? 4000);
+
+createApp().listen(port, () => {
+  console.log(`PulseMetrics API listening on port ${port}`);
+});
