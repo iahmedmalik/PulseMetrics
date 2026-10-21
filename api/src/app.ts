@@ -5,12 +5,13 @@ import type { Auth } from "./auth";
 import type { Config } from "./config";
 import type { Db } from "./db/client";
 import { HttpError } from "./http-error";
+import { refusals, type Limits } from "./rate-limit";
 import { createRoutes } from "./routes";
 import { trackRouter } from "./routes/track";
 
 // Everything the real server hands to the app. Tests can build the app without it (health check only)
 // or with a real local database.
-export type AppContext = { config: Config; db: Db; ingestPool: Pool; auth: Auth };
+export type AppContext = { config: Config; db: Db; ingestPool: Pool; auth: Auth; limits?: Limits };
 
 export function createApp(ctx?: AppContext): Express {
   const app = express();
@@ -28,7 +29,7 @@ export function createApp(ctx?: AppContext): Express {
 
   // The pinger calls this every 10 minutes to keep the free Render service awake.
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+    res.json({ status: "ok", refused: { ...refusals } });
   });
 
   if (ctx) app.use("/v1", createRoutes(ctx));

@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { AppContext } from "../app";
 import { recordEvent } from "../db/client";
 import { HttpError } from "../http-error";
+import { DEFAULT_LIMITS, perSiteLimiter, perVisitorLimiter } from "../rate-limit";
 import { validateBody } from "../validate";
 
 // POST /v1/track: the one public door. Anyone's page may call it, so it is strict about what comes in
@@ -34,6 +35,7 @@ const cors: RequestHandler = (_req, res, next) => {
 
 export function trackRouter(ctx: AppContext): Router {
   const router = Router();
+  const limits = ctx.limits ?? DEFAULT_LIMITS;
   router.use(cors);
   router.options("/", (_req, res) => {
     res.status(204).end();
@@ -41,21 +43,29 @@ export function trackRouter(ctx: AppContext): Router {
 
   // The snippet sends JSON as text/plain, which browsers allow without a pre-flight check.
   // The body is tiny: 1 KB is far more than an event needs.
-  router.post("/", express.json({ type: ["application/json", "text/plain"], limit: "1kb" }), validateBody(eventSchema), async (req, res, next) => {
-    try {
-      const { key, anon, name } = req.body as z.infer<typeof eventSchema>;
-      const result = await recordEvent(ctx.ingestPool, key, anon, name);
-      if (result === "ok") {
-        res.status(204).end();
-        return;
+  // Order matters: refuse a flooding visitor before reading anything, check the body, then count per site.
+  router.post(
+    "/",
+    perVisitorLimiter(limits),
+    express.json({ type: ["application/json", "text/plain"], limit: "1kb" }),
+    validateBody(eventSchema),
+    perSiteLimiter(limits),
+    async (req, res, next) => {
+      try {
+        const { key, anon, name } = req.body as z.infer<typeof eventSchema>;
+        const result = await recordEvent(ctx.ingestPool, key, anon, name);
+        if (result === "ok") {
+          res.status(204).end();
+          return;
+        }
+        if (result === "unknown_key") throw new HttpError(404, "Unknown site key.");
+        if (result === "full") throw new HttpError(429, "This site has reached its event limit.");
+        throw new HttpError(400, "The event is not valid.");
+      } catch (err) {
+        next(err);
       }
-      if (result === "unknown_key") throw new HttpError(404, "Unknown site key.");
-      if (result === "full") throw new HttpError(429, "This site has reached its event limit.");
-      throw new HttpError(400, "The event is not valid.");
-    } catch (err) {
-      next(err);
-    }
-  });
+    },
+  );
 
   router.all("/", (_req, _res, next) => next(new HttpError(405, "Use POST.")));
   return router;
