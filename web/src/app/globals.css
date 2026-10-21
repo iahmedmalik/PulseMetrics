@@ -522,3 +522,184 @@ select:focus {
     opacity: 0;
   }
 }
+
+/* ---- sites page ---- */
+.steps {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.step {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.step b {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 2px solid var(--line);
+  font: 600 15px var(--font-mono);
+}
+.step b svg {
+  width: 18px;
+  height: 18px;
+}
+.step.done b {
+  border-color: var(--bar);
+  color: var(--bar);
+}
+.step.now b {
+  border-color: var(--acc);
+  animation: ping 1.6s infinite;
+}
+.step span {
+  color: var(--mute);
+  font-size: 14px;
+}
+.step strong {
+  display: block;
+  color: var(--chalk);
+  font-size: 15px;
+}
+@keyframes ping {
+  50% {
+    box-shadow:
+      0 0 0 7px #ebb53f00,
+      0 0 0 0 #ebb53f88;
+  }
+}
+.sites {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.site-card,
+.new-site {
+  display: grid;
+  gap: 10px;
+  animation: enter var(--dur) var(--ease) both;
+}
+.site-card > h2 {
+  margin: 0;
+}
+.new-site {
+  background: transparent;
+  border: 2px dashed var(--line);
+  box-shadow: none;
+}
+.key-line {
+  margin: 0;
+  color: var(--mute);
+  font-size: 13px;
+}
+.spark {
+  width: 100%;
+  height: 60px;
+}
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.live {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--trace-t) !important;
+  font: 600 12px var(--font-mono) !important;
+}
+.live i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--trace);
+  animation: ping-red 1.6s infinite;
+}
+@keyframes ping-red {
+  50% {
+    box-shadow:
+      0 0 0 7px #ff5a6000,
+      0 0 0 0 #ff5a6088;
+  }
+}
+/* anything that opens or closes grows and fades with the same ease, both ways */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  /* closed content leaves the page for screen readers too, once the closing animation has finished */
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    visibility 0s linear var(--dur);
+}
+.collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.collapse > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.key-panel {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+.key-full {
+  display: block;
+  padding: 8px 12px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.snippet {
+  margin: 0;
+  padding: 12px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: 500 13px/1.5 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.switcher select {
+  width: auto;
+  min-width: 180px;
+  padding: 8px 12px;
+  font: 600 16px var(--font-text);
+  border-radius: 99px;
+}
+@media (max-width: 760px) {
+  .steps,
+  .sites {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step.now b,
+  .live i {
+    animation: none;
+  }
+  .collapse {
+    transition-duration: 0.01s;
+  }
+}

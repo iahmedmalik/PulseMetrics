@@ -22,7 +22,10 @@ export async function apiFetch(path: string, init: RequestInit = {}, timeoutMs =
       cache: "no-store",
       signal: AbortSignal.timeout(timeoutMs),
     });
-  } catch {
+  } catch (err) {
+    // Say why in the server log (a timeout, a refused or a reset connection): "not answering" alone hides the cause.
+    const cause = (err as { cause?: { code?: string } }).cause?.code ?? (err as Error).name;
+    console.error(`API call ${init.method ?? "GET"} ${path} failed: ${cause}`);
     throw new ApiDown();
   }
 }
