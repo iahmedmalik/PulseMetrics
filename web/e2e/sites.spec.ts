@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { LOCAL_ONLY, anonId, createSiteViaApi, ingestDb, signUpViaApi } from "./helpers";
+import { LOCAL_ONLY, anonId, createSiteViaApi, ingestDb, ownerDb, signUpViaApi } from "./helpers";
 
 // Sites: make one, copy its snippet, read and replace its key.
 
@@ -100,6 +100,37 @@ test.describe("sites", () => {
     await expect(card.getByText("live today")).toBeVisible();
     await expect(card.getByText(/· 1 event$/)).toBeVisible();
     await expect(page.locator(".step.done")).toHaveCount(3);
+  });
+
+  test("deleting a site asks first, then removes it and every event @core", async ({ page }) => {
+    test.skip(!LOCAL_ONLY, "needs direct database access");
+    const site = await createSiteViaApi(page, "Doomed app");
+    const ingest = await ingestDb();
+    try {
+      for (let i = 0; i < 3; i++) await ingest.query("select record_event($1, $2, $3)", [site.key, anonId(), "queue_joined"]);
+    } finally {
+      await ingest.end();
+    }
+    await page.goto("/");
+    const card = page.getByRole("article", { name: "Doomed app" });
+    await card.getByRole("button", { name: "Key", exact: true }).click();
+
+    await card.getByRole("button", { name: "Delete site" }).click();
+    await expect(card.getByText(/Delete Doomed app and all 3 of its events for good\? This cannot be undone\./)).toBeVisible();
+    await card.getByRole("button", { name: "Keep it" }).click();
+    await expect(card).toBeVisible(); // nothing happened
+
+    await card.getByRole("button", { name: "Delete site" }).click();
+    await card.getByRole("button", { name: "Yes, delete it" }).click();
+    await expect(page.getByRole("article", { name: "Doomed app" })).toHaveCount(0);
+
+    const db = await ownerDb();
+    try {
+      expect(Number((await db.query("select count(*) as n from events where site_id = $1", [site.id])).rows[0].n)).toBe(0);
+      expect((await db.query("select 1 from sites where id = $1", [site.id])).rows).toHaveLength(0);
+    } finally {
+      await db.end();
+    }
   });
 
   test("owners never see each other's sites", async ({ browser, baseURL }) => {

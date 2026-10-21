@@ -236,6 +236,21 @@ export function sitesRouter(ctx: AppContext): Router {
     }
   });
 
+  // Deletes the site and every event it ever received (the events go with it). It cannot be undone.
+  router.delete("/:id", async (req, res, next) => {
+    try {
+      const id = idSchema.safeParse(req.params.id);
+      if (!id.success) throw new HttpError(404, "That site was not found.");
+      await asOwner(ctx.db, req.user!.id, async (tx) => {
+        const rows = await tx.execute(sql`delete from sites where id = ${id.data} returning id`);
+        if (rows.rows.length === 0) throw new HttpError(404, "That site was not found.");
+      });
+      res.status(204).end();
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // A new key, and the old one stops working at once.
   router.post("/:id/rotate-key", async (req, res, next) => {
     try {

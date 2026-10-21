@@ -5,7 +5,7 @@ import { createApp } from "../src/app";
 import { createAuth } from "../src/auth";
 import type { Config } from "../src/config";
 import { createDb, createPool, recordEvent } from "../src/db/client";
-import { newAnon, newId, urls } from "./helpers";
+import { connect, newAnon, newId, seedEvent, urls } from "./helpers";
 
 // Sites and their keys, through the real Express app and a real local Postgres.
 
@@ -48,6 +48,7 @@ const api = (cookie: string) => ({
   get: (p: string) => request(app).get(p).set("Cookie", cookie),
   post: (p: string, body: object = {}) => request(app).post(p).set("Cookie", cookie).send(body),
   patch: (p: string, body: object) => request(app).patch(p).set("Cookie", cookie).send(body),
+  delete: (p: string) => request(app).delete(p).set("Cookie", cookie),
 });
 
 describe("sites", () => {
@@ -136,6 +137,46 @@ describe("sites", () => {
     const listed = (await a.get("/v1/sites")).body.sites[0];
     expect(listed.eventCount).toBe(3);
     expect(listed.daily[13]).toBe(2); // two different browsers today
+  });
+
+  it("deletes a site together with all its events, and its key stops working", async () => {
+    const a = api(await newOwner());
+    const site = (await a.post("/v1/sites", { name: "Doomed" })).body.site;
+    const keep = (await a.post("/v1/sites", { name: "Kept" })).body.site;
+    const owner = await connect(urls.owner());
+    try {
+      for (let i = 0; i < 3; i++) await seedEvent(owner, site.id, newAnon(), "queue_joined", new Date());
+      await seedEvent(owner, keep.id, newAnon(), "queue_joined", new Date());
+      const count = async (id: string) => Number((await owner.query("select count(*) as n from events where site_id = $1", [id])).rows[0].n);
+      expect(await count(site.id)).toBe(3);
+
+      expect((await a.delete(`/v1/sites/${site.id}`)).status).toBe(204);
+
+      expect(await count(site.id)).toBe(0); // every event went with the site
+      expect(await count(keep.id)).toBe(1); // the other site is untouched
+      expect((await a.get(`/v1/sites/${site.id}`)).status).toBe(404);
+      expect(await recordEvent(ingestPool, site.key, newAnon(), "queue_joined")).toBe("unknown_key");
+      expect((await a.get("/v1/sites")).body.sites.map((s: { name: string }) => s.name)).toEqual(["Kept"]);
+    } finally {
+      await owner.end();
+    }
+  });
+
+  it("another owner cannot delete a site, and deleting twice is a 404", async () => {
+    const alice = api(await newOwner());
+    const bob = api(await newOwner());
+    const id = (await alice.post("/v1/sites", { name: "Alice's" })).body.site.id;
+    expect((await bob.delete(`/v1/sites/${id}`)).status).toBe(404);
+    expect((await alice.get(`/v1/sites/${id}`)).status).toBe(200); // still there
+    expect((await alice.delete(`/v1/sites/${id}`)).status).toBe(204);
+    expect((await alice.delete(`/v1/sites/${id}`)).status).toBe(404);
+    expect((await alice.delete("/v1/sites/not-an-id")).status).toBe(404);
+  });
+
+  it("deleting needs sign-in", async () => {
+    const a = api(await newOwner());
+    const id = (await a.post("/v1/sites", { name: "Mine" })).body.site.id;
+    expect((await request(app).delete(`/v1/sites/${id}`)).status).toBe(401);
   });
 
   it("allows at most 10 sites per owner", async () => {

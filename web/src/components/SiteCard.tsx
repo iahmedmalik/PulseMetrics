@@ -12,6 +12,7 @@ export function SiteCard({ site }: { site: SiteView }) {
   const [showSnippet, setShowSnippet] = useState(false);
   const [keyOpen, setKeyOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +41,19 @@ export function SiteCard({ site }: { site: SiteView }) {
     } catch {
       setError("Could not replace the key. Try again in a moment.");
     } finally {
+      setBusy(false);
+    }
+  }
+
+  async function deleteSite() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/backend/v1/sites/${site.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      setError("Could not delete the site. Try again in a moment.");
       setBusy(false);
     }
   }
@@ -102,6 +116,25 @@ export function SiteCard({ site }: { site: SiteView }) {
             ) : (
               <button type="button" className="btn" onClick={() => setConfirming(true)}>
                 Replace key
+              </button>
+            )}
+            {deleting ? (
+              <div className="note bad" role="group" aria-label="Delete the site">
+                <p>
+                  Delete <b>{site.name}</b> and all {site.eventCount.toLocaleString("en")} of its events for good? This cannot be undone.
+                </p>
+                <div className="card-actions">
+                  <button type="button" className="btn danger" onClick={deleteSite} disabled={busy}>
+                    {busy ? "Deleting…" : "Yes, delete it"}
+                  </button>
+                  <button type="button" className="btn" onClick={() => setDeleting(false)} disabled={busy}>
+                    Keep it
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" className="btn danger-quiet" onClick={() => setDeleting(true)}>
+                Delete site
               </button>
             )}
             <div role="alert">{error && <p className="note bad">{error}</p>}</div>
