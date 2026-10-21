@@ -9,6 +9,8 @@
   --card: #0d2a1e;
   --card2: #133a28;
   --line: #2a5d44;
+  /* controls (fields, buttons) need 3:1 against what they sit on, so they get a stronger edge than decoration */
+  --line-strong: #4a936f;
   --grid: #1c4631;
   --grid2: #143626;
   --plate: #0a2218;
@@ -286,7 +288,7 @@ h2 {
   justify-content: center;
   gap: 8px;
   min-height: 40px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   background: transparent;
   border-radius: 99px;
   padding: 8px 18px;
@@ -373,7 +375,7 @@ input,
 select {
   width: 100%;
   background: var(--well);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   border-radius: 10px;
   color: var(--chalk);
   padding: 9px 12px;
