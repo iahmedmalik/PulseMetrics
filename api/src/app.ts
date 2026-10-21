@@ -7,6 +7,7 @@ import type { Db } from "./db/client";
 import { HttpError } from "./http-error";
 import { refusals, type Limits } from "./rate-limit";
 import { createRoutes } from "./routes";
+import { internalRouter } from "./routes/internal";
 import { trackRouter } from "./routes/track";
 
 // Everything the real server hands to the app. Tests can build the app without it (health check only)
@@ -33,6 +34,7 @@ export function createApp(ctx?: AppContext): Express {
   });
 
   if (ctx) app.use("/v1", createRoutes(ctx));
+  if (ctx) app.use("/internal", internalRouter(ctx));
 
   app.use((_req, _res, next) => next(new HttpError(404, "Not found.")));
 
