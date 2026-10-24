@@ -51,7 +51,7 @@ export const LINKS = [
   { label: "Source code on GitHub", href: REPO },
   { label: "README", href: `${REPO}#readme` },
   { label: "Product requirements (PRD)", href: `${REPO}/blob/main/docs/PRD.md` },
-  { label: "Test plan and report", href: `${REPO}/blob/main/docs/test-report.md` },
+  { label: "Test plan and report", href: `${REPO}/blob/main/docs/TEST-REPORT.md` },
   { label: "API reference", href: `${REPO}/blob/main/docs/api/README.md` },
 ];
 

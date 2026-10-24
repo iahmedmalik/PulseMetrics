@@ -1,4 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
+import { readdir } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { expect, test } from "@playwright/test";
 import { signUpViaApi } from "./helpers";
 
@@ -38,9 +40,19 @@ test.describe("how it's built", () => {
         "https://github.com/ahmed-malikk/PulseMetrics",
         "https://github.com/ahmed-malikk/PulseMetrics#readme",
         "https://github.com/ahmed-malikk/PulseMetrics/blob/main/docs/PRD.md",
-        "https://github.com/ahmed-malikk/PulseMetrics/blob/main/docs/test-report.md",
+        "https://github.com/ahmed-malikk/PulseMetrics/blob/main/docs/TEST-REPORT.md",
       ]),
     );
+    // Windows resolves paths without checking case; GitHub requires the exact tracked spelling.
+    for (const href of hrefs) {
+      const prefix = "https://github.com/ahmed-malikk/PulseMetrics/blob/main/";
+      if (!href.startsWith(prefix)) continue;
+      let directory = resolve(__dirname, "../..");
+      for (const segment of href.slice(prefix.length).split("/")) {
+        expect(await readdir(directory), `${href} uses the actual filename case`).toContain(segment);
+        directory = join(directory, segment);
+      }
+    }
   });
 
   test("never mentions inspiration or how it was written, and keeps no portfolio wording on the product screens", async ({ page }) => {
