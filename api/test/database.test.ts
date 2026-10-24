@@ -33,6 +33,31 @@ afterAll(async () => {
 const rec = (key: string, anon: string, name: string) =>
   ingest.query<{ r: string }>("select record_event($1, $2, $3) as r", [key, anon, name]).then((x) => x.rows[0]!.r);
 
+describe("every application table has a row-security boundary", () => {
+  it("enables RLS on all seven tables, including authentication and the ledger", async () => {
+    const rows = await owner.query<{ name: string; enabled: boolean }>(`
+      select c.relname as name, c.relrowsecurity as enabled
+      from pg_class c join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public' and c.relkind = 'r'
+      order by c.relname
+    `);
+    expect(rows.rows.map((row) => row.name)).toEqual(["_migrations", "account", "events", "session", "sites", "user", "verification"]);
+    expect(rows.rows.filter((row) => !row.enabled).map((row) => row.name)).toEqual([]);
+  });
+
+  it("neither runtime can read or alter the migration ledger", async () => {
+    for (const client of [app, ingest]) {
+      expect(await denied(client.query("select * from _migrations"))).toBe(true);
+      expect(await denied(client.query("update _migrations set checksum = 'changed' where false"))).toBe(true);
+    }
+  });
+
+  it("ingest cannot read session or verification records", async () => {
+    expect(await denied(ingest.query("select * from session"))).toBe(true);
+    expect(await denied(ingest.query("select * from verification"))).toBe(true);
+  });
+});
+
 describe("record_event (the only way an event gets in)", () => {
   it("stores a valid event and counts it", async () => {
     const before = (await owner.query("select event_count from sites where id = $1", [aliceSite.id])).rows[0].event_count;
