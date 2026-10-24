@@ -23,7 +23,7 @@ test.describe("A v B calculator", () => {
     await expect(page.getByRole("status")).toContainText("Enter the numbers.");
   });
 
-  test("10% v 12% with 1,000 each: p = 0.153 and it does NOT call B the winner @core", async ({ page }) => {
+  test("10% v 12% with 1,000 each: p = 0.153 and it does NOT call B the winner @smoke", async ({ page }) => {
     await fill(page, "1000", "100", "1000", "120");
     await expect(page.locator(".big")).toHaveText("p = 0.153");
     await expect(page.getByRole("status")).toContainText("Not enough evidence yet.");
@@ -87,7 +87,7 @@ test.describe("A v B calculator", () => {
     await expect(page.getByText("Decide how many people you need before you start")).toBeVisible();
   });
 
-  test("with a result it passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+  test("with a result it passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     await fill(page, "1000", "100", "1000", "120");
     await page.waitForTimeout(1500);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

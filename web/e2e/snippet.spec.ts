@@ -76,7 +76,7 @@ test.describe("the snippet", () => {
     await host.close();
   });
 
-  test("an event from another website reaches the database as just a name and a browser id @core", async ({ page }) => {
+test("an event from another website reaches the database as just a name and a browser id", async ({ page }) => {
     const site = await createSiteViaApi(page);
     const sent: { body: string; headers: Record<string, string> }[] = [];
     page.on("request", (r) => {
@@ -98,7 +98,7 @@ test.describe("the snippet", () => {
     expect(sent[0]!.headers["cookie"]).toBeUndefined();
   });
 
-  test("a page address with a private token in it is never sent or stored (rule P-1)", async ({ page }) => {
+test("a page address with a private token in it is never sent or stored (rule P-1)", async ({ page }) => {
     const site = await createSiteViaApi(page);
     const bodies: string[] = [];
     page.on("request", (r) => {

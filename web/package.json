@@ -10,6 +10,10 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "next build && playwright test",
     "test:e2e:run": "playwright test",
+    "test:smoke": "next build && playwright test --grep @smoke",
+    "test:smoke:run": "playwright test --grep @smoke",
+    "test:regression": "next build && playwright test",
+    "test:regression:run": "playwright test",
     "prebuild": "node scripts/build-snippet.mjs",
     "build:snippet": "node scripts/build-snippet.mjs"
   },

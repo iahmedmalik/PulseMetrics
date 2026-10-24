@@ -16,7 +16,7 @@ test.describe("install", () => {
     await expect(page.getByText("Make a site first")).toBeVisible();
   });
 
-  test("shows the snippet for this site, with its key and this dashboard's own address", async ({ page }) => {
+test("shows the snippet for this site, with its key and this dashboard's own address @smoke", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await page.goto("/install");
     await expect(page.getByRole("heading", { level: 1, name: "Install" })).toBeVisible();
@@ -59,19 +59,28 @@ test.describe("install", () => {
     await expect(page.getByRole("link", { name: "privacy page" })).toHaveAttribute("href", "/privacy");
   });
 
-  test("says it is waiting, then says it works the moment the first event arrives @core", async ({ page }) => {
-    test.skip(!LOCAL_ONLY, "needs direct database access");
+test("a public event reaches Install, Innings and Funnel while extra private data is refused @smoke", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await page.goto("/install");
     await expect(page.getByRole("status").filter({ hasText: "Waiting for the first event" })).toBeVisible();
-    const db = await ingestDb();
-    try {
-      await db.query("select record_event($1, $2, $3)", [site.key, anonId(), "queue_joined"]);
-    } finally {
-      await db.end();
+
+    const anon = anonId();
+    const refused = await page.request.post("/backend/v1/track", { data: { key: site.key, anon, name: "queue_joined", page: "/status/private-token" } });
+    expect(refused.status()).toBe(400);
+    for (const name of ["queue_joined", "called_in"]) {
+      const accepted = await page.request.post("/backend/v1/track", { data: { key: site.key, anon, name } });
+      expect(accepted.status()).toBe(204);
     }
+
     await expect(page.getByRole("status").filter({ hasText: "It works." })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole("status")).toContainText("Queue joined");
+    await expect(page.getByRole("status")).toContainText("Called in");
+
+    await page.goto("/innings");
+    await expect(page.locator(".board .cell").filter({ hasText: "Active today" }).locator(".roll .sr-only")).toHaveText("1");
+
+    await page.goto("/funnel");
+    await expect(page.getByRole("heading", { name: /Queue joined to Called in/ })).toBeVisible();
+    await expect(page.getByText(/^100% of the 1 person who started/)).toBeVisible();
   });
 
   test("already says it works when events have arrived before", async ({ page }) => {
@@ -87,7 +96,7 @@ test.describe("install", () => {
     await expect(page.getByRole("status").filter({ hasText: "It works." })).toBeVisible();
   });
 
-  test("the snippet shown here really works when pasted into another website @core", async ({ page }) => {
+test("the snippet shown here really works when pasted into another website", async ({ page }) => {
     test.skip(!LOCAL_ONLY, "needs direct database access");
     const site = await createSiteViaApi(page, "QueueCare");
     await page.goto("/install");
@@ -114,7 +123,7 @@ test.describe("install", () => {
     await expect(page.getByRole("status").filter({ hasText: "It works." })).toBeVisible({ timeout: 15_000 });
   });
 
-  test("the page passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+test("the page passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     await createSiteViaApi(page, "QueueCare");
     await page.goto("/install");
     await page.getByRole("button", { name: "Calling it before the page has loaded?" }).click();

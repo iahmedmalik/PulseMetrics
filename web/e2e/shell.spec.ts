@@ -9,7 +9,7 @@ test.describe("the shell", () => {
     await signUpViaApi(page);
   });
 
-  test("shows the brand, the page heading and the navigation @core", async ({ page, isMobile }) => {
+  test("shows the brand, the page heading and the navigation @smoke", async ({ page, isMobile }) => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "PulseMetrics" }).first()).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "Your sites" })).toBeVisible();
@@ -32,7 +32,7 @@ test.describe("the shell", () => {
     await expect(current).toHaveAttribute("aria-current", "page");
   });
 
-  test("New site opens and focuses the creation form from another page @core", async ({ page }) => {
+  test("New site opens and focuses the creation form from another page @smoke @regression", async ({ page }) => {
     await page.goto("/ab");
     await page.getByRole("link", { name: "New site", exact: true }).click();
     await expect(page).toHaveURL(/\/#new-site-name$/);
@@ -47,7 +47,7 @@ test.describe("the shell", () => {
     await expect(page.getByRole("article", { name: "New site action check", exact: true })).toBeVisible();
   });
 
-  test("uses the phone layout on a phone and the laptop layout on a laptop", async ({ page, isMobile }) => {
+  test("uses the phone layout on a phone and the laptop layout on a laptop @mobile", async ({ page, isMobile }) => {
     await page.goto("/");
     const tabBar = page.locator(".tab-bar");
     const mainNav = page.locator(".main-nav");
@@ -60,13 +60,13 @@ test.describe("the shell", () => {
     }
   });
 
-  test("never scrolls sideways", async ({ page }) => {
+  test("never scrolls sideways @mobile", async ({ page }) => {
     await page.goto("/");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test("touch targets in the phone tab bar are at least 44 px", async ({ page, isMobile }) => {
+  test("touch targets in the phone tab bar are at least 44 px @mobile", async ({ page, isMobile }) => {
     test.skip(!isMobile, "phone only");
     await page.goto("/");
     for (const link of await page.locator(".tab-bar a").all()) {
@@ -76,7 +76,7 @@ test.describe("the shell", () => {
     }
   });
 
-  test("passes the accessibility scan (WCAG 2.2 AA)", async ({ page }) => {
+  test("passes the accessibility scan (WCAG 2.2 AA) @mobile", async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(900); // let the enter animation settle before measuring contrast
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();

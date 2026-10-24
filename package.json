@@ -13,7 +13,9 @@
     "dev:web": "npm run dev -w web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "test:smoke": "npm run test:smoke -w @pulse/web",
+    "test:regression": "npm run test:regression -w @pulse/web"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

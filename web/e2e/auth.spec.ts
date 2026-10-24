@@ -5,13 +5,13 @@ import { PASSWORD, signUpViaApi, uniqueEmail } from "./helpers";
 // Sign-up, sign-in and sign-out through the real screens, against the real API and database.
 
 test.describe("signing in", () => {
-  test("a signed-out visitor is sent to the sign-in page @core", async ({ page }) => {
+test("a signed-out visitor is sent to the sign-in page @smoke", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/sign-in$/);
     await expect(page.getByRole("heading", { level: 1, name: "Sign in" })).toBeVisible();
   });
 
-  test("a new owner creates an account and lands on their sites @core", async ({ page }) => {
+test("a new owner creates an account and lands on their sites @smoke", async ({ page }) => {
     await page.goto("/sign-up");
     await page.getByLabel("Your name").fill("Ali Raza");
     await page.getByLabel("Email").fill(uniqueEmail());
@@ -21,7 +21,7 @@ test.describe("signing in", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Your sites" })).toBeVisible();
   });
 
-  test("an existing owner signs in and out @core", async ({ page, context }) => {
+test("an existing owner signs in and out", async ({ page, context }) => {
     const { email } = await signUpViaApi(page);
     await context.clearCookies();
 
@@ -75,7 +75,7 @@ test.describe("signing in", () => {
     await expect(page.locator("main").getByRole("alert")).toContainText("already an account");
   });
 
-  test("the sign-in and sign-up pages never scroll sideways and pass the accessibility scan", async ({ page }) => {
+test("the sign-in and sign-up pages never scroll sideways and pass the accessibility scan @mobile", async ({ page }) => {
     for (const path of ["/sign-in", "/sign-up"]) {
       await page.goto(path);
       await page.waitForTimeout(900);

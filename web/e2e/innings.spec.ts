@@ -43,7 +43,7 @@ test.describe("innings", () => {
     await signUpViaApi(page);
   });
 
-  test("with no site, the page says to make one @core", async ({ page }) => {
+test("with no site, the page says to make one", async ({ page }) => {
     await page.goto("/innings");
     await expect(page.getByText("Make a site first")).toBeVisible();
     await page.getByRole("link", { name: "Make a site" }).click();
@@ -60,7 +60,7 @@ test.describe("innings", () => {
     await expect(page.locator(".bar")).toHaveCount(13); // only the heading drawing, no chart
   });
 
-  test("shows today, the busiest day and the average from real events @core", async ({ page }) => {
+test("shows today, the busiest day and the average from real events", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await addDay(site.id, 0, 2); // today: 2 browsers
     await addDay(site.id, 1, 5); // yesterday: 5
@@ -132,7 +132,7 @@ test.describe("innings", () => {
     await expect(page.getByText("Nothing yet. The first event appears here within a few seconds of arriving.")).toBeVisible();
   });
 
-  test("a new event shows in the live list within seconds, without reloading @core", async ({ page }) => {
+test("a new event shows in the live list within seconds, without reloading", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     const db = await ingestDb();
     try {
@@ -179,7 +179,7 @@ test.describe("innings", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Second site" })).toBeVisible();
   });
 
-  test("the page with data passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+test("the page with data passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await addDay(site.id, 0, 2);
     await addDay(site.id, 2, 6);

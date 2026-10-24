@@ -9,7 +9,7 @@ test.describe("sites", () => {
     await signUpViaApi(page);
   });
 
-  test("an owner with no sites is invited to make the first one @core", async ({ page }) => {
+test("an owner with no sites is invited to make the first one", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Make your first site" })).toBeVisible();
     await page.getByLabel("Name it").fill("QueueCare");
@@ -57,7 +57,7 @@ test.describe("sites", () => {
     await expect(page.getByText(site.key)).toBeHidden();
   });
 
-  test("replacing the key asks first, then the old key stops working and the new one works @core", async ({ page }) => {
+test("replacing the key asks first, then the old key stops working and the new one works", async ({ page }) => {
     test.skip(!LOCAL_ONLY, "needs direct database access");
     const site = await createSiteViaApi(page);
     await page.goto("/");
@@ -102,7 +102,7 @@ test.describe("sites", () => {
     await expect(page.locator(".step.done")).toHaveCount(3);
   });
 
-  test("deleting a site asks first, then removes it and every event @core", async ({ page }) => {
+test("deleting a site asks first, then removes it and every event", async ({ page }) => {
     test.skip(!LOCAL_ONLY, "needs direct database access");
     const site = await createSiteViaApi(page, "Doomed app");
     const ingest = await ingestDb();
@@ -149,7 +149,7 @@ test.describe("sites", () => {
     await b.close();
   });
 
-  test("the sites page with a site passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+test("the sites page with a site passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     await createSiteViaApi(page, "QueueCare");
     await page.goto("/");
     await page.getByRole("button", { name: "Key", exact: true }).click();

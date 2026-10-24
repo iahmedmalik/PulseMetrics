@@ -25,7 +25,7 @@ test.describe("ask", () => {
     await expect(page.getByRole("button", { name: "Ask", exact: true })).toHaveCount(0);
   });
 
-  test("the not-set-up page passes the accessibility scan and does not scroll sideways @core", async ({ page }) => {
+test("the not-set-up page passes the accessibility scan and does not scroll sideways @mobile", async ({ page }) => {
     await createSiteViaApi(page, "QueueCare");
     await page.goto("/ask");
     await page.waitForTimeout(1500);

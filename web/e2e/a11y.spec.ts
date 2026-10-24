@@ -24,16 +24,16 @@ async function check(page: import("@playwright/test").Page, path: string) {
 }
 
 test.describe("every screen", () => {
-  test("signed-in screens pass the accessibility scan, with no site yet", async ({ page }) => {
+test("signed-in screens pass the accessibility scan, with no site yet @mobile", async ({ page }) => {
     await signUpViaApi(page);
     for (const path of SIGNED_IN) await check(page, path);
   });
 
-  test("public screens pass the accessibility scan, signed out", async ({ page }) => {
+test("public screens pass the accessibility scan, signed out @mobile", async ({ page }) => {
     for (const path of PUBLIC) await check(page, path);
   });
 
-  test("on a phone, every button and link in the main area is a comfortable touch target", async ({ page, isMobile }) => {
+test("on a phone, every button and link in the main area is a comfortable touch target @mobile", async ({ page, isMobile }) => {
     test.skip(!isMobile, "phone only");
     await signUpViaApi(page);
     for (const path of ["/", "/ab", "/install", "/more"]) {

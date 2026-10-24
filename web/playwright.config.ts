@@ -6,8 +6,10 @@ const DB_PORT = 54349;
 const base = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${WEB_PORT}`;
 const local = !process.env.E2E_BASE_URL;
 
-// Every test runs in desktop Chrome. Layout, touch and accessibility checks also run in a 375 px
-// phone view, and the core flows (@core) also in desktop Edge (also Chromium, so only those).
+// Every test runs once in desktop Chrome: that is the complete browser regression.
+// The 375 px phone repeats only critical journeys (@smoke) and checks whose evidence is genuinely
+// viewport/touch-specific (@mobile). Edge repeats only the small critical smoke set. This keeps
+// cross-browser confidence without multiplying content and server-behaviour tests that cannot vary by viewport.
 export default defineConfig({
   testDir: "e2e",
   timeout: 60_000,
@@ -23,8 +25,9 @@ export default defineConfig({
       name: "phone-375",
       use: { ...devices["Pixel 7"], channel: "chrome", viewport: { width: 375, height: 812 } },
       testIgnore: /\.desktop\.spec\.ts/,
+      grep: /@mobile|@smoke/,
     },
-    { name: "desktop-edge", use: { ...devices["Desktop Edge"], channel: "msedge" }, grep: /@core/ },
+    { name: "desktop-edge", use: { ...devices["Desktop Edge"], channel: "msedge" }, grep: /@smoke/ },
   ],
   // The whole stack runs on this computer: a real Postgres, the API, and the dashboard (a production
   // build, so run `npm run build` first). Point E2E_BASE_URL at a deployed site to test that instead.

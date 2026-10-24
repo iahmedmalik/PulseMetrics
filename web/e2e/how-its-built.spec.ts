@@ -7,7 +7,7 @@ import { signUpViaApi } from "./helpers";
 // The "How it's built" page: public, honest, and free of wording the project's rules forbid.
 
 test.describe("how it's built", () => {
-  test("anyone can open it, and it has every section @core", async ({ page }) => {
+test("anyone can open it, and it has every section", async ({ page }) => {
     await page.goto("/how-its-built");
     await expect(page.getByRole("heading", { level: 1, name: "How it's built" })).toBeVisible();
     for (const h of ["Who built it", "The story", "The problem", "The technology", "Architecture", "Decisions worth knowing", "Tests", "Honest limits", "Links", "Credits"]) {
@@ -32,7 +32,7 @@ test.describe("how it's built", () => {
     }
   });
 
-  test("links to the repository, README, PRD and test report", async ({ page }) => {
+test("links to the repository, README, PRD and test report @regression", async ({ page }) => {
     await page.goto("/how-its-built");
     const hrefs = await page.getByRole("list").filter({ has: page.getByRole("link", { name: "Source code on GitHub" }) }).getByRole("link").evaluateAll((a) => a.map((x) => (x as HTMLAnchorElement).href));
     expect(hrefs).toEqual(
@@ -66,7 +66,7 @@ test.describe("how it's built", () => {
     expect((await page.locator("main").innerText()).toLowerCase()).not.toContain("portfolio");
   });
 
-  test("a signed-in owner keeps the full navigation around it", async ({ page, isMobile }) => {
+test("a signed-in owner keeps the full navigation around it @mobile", async ({ page, isMobile }) => {
     await signUpViaApi(page);
     await page.goto("/how-its-built");
     await expect(page.getByRole("heading", { level: 1, name: "How it's built" })).toBeVisible();
@@ -82,7 +82,7 @@ test.describe("how it's built", () => {
     await expect(page).toHaveURL(/\/how-its-built$/);
   });
 
-  test("passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+test("passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     await page.goto("/how-its-built");
     await page.waitForTimeout(2000);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

@@ -5,7 +5,7 @@ import { signUpViaApi } from "./helpers";
 // The privacy page: public, plain, and checked against what the product really does.
 
 test.describe("privacy", () => {
-  test("anyone can read it without signing in @core", async ({ page }) => {
+test("anyone can read it without signing in", async ({ page }) => {
     await page.goto("/privacy");
     await expect(page).toHaveURL(/\/privacy$/);
     await expect(page.getByRole("heading", { level: 1, name: "Privacy" })).toBeVisible();
@@ -35,7 +35,7 @@ test.describe("privacy", () => {
     await expect(page).toHaveURL(/\/privacy$/);
   });
 
-  test("passes the accessibility scan and never scrolls sideways", async ({ page }) => {
+test("passes the accessibility scan and never scrolls sideways @mobile", async ({ page }) => {
     await page.goto("/privacy");
     await page.waitForTimeout(1800);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

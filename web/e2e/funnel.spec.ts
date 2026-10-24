@@ -20,7 +20,7 @@ test.describe("funnel", () => {
     await expect(page.getByRole("link", { name: "See how to send events" })).toBeVisible();
   });
 
-  test("shows people at each step, the biggest drop and the overall result @core", async ({ page, isMobile }) => {
+test("shows people at each step, the biggest drop and the overall result", async ({ page, isMobile }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await seedJourneys(site.id, STEPS, [40, 30, 20]);
     await page.goto("/funnel");
@@ -65,7 +65,7 @@ test.describe("funnel", () => {
     await expect(page.getByText(/Only 10 people started here\. With so few, treat the percentages as a rough guide/)).toBeVisible();
   });
 
-  test("uses the wide funnel on a laptop and a vertical list of bars on a phone", async ({ page, isMobile }) => {
+test("uses the wide funnel on a laptop and a vertical list of bars on a phone @mobile", async ({ page, isMobile }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await seedJourneys(site.id, STEPS, [40, 30, 20]);
     await page.goto("/funnel");
@@ -80,7 +80,7 @@ test.describe("funnel", () => {
     }
   });
 
-  test("the steps can be changed, added and removed, within 2 to 6 @core", async ({ page }) => {
+test("the steps can be changed, added and removed, within 2 to 6", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await seedJourneys(site.id, [...STEPS, "step_out"], [40, 30, 20, 8]);
     await page.goto("/funnel");
@@ -127,7 +127,7 @@ test.describe("funnel", () => {
     await expect(page.getByText("0% of the 20 people who started got all the way to Queue joined.")).toBeVisible();
   });
 
-  test("passes the accessibility scan with the table open and never scrolls sideways", async ({ page }) => {
+test("passes the accessibility scan with the table open and never scrolls sideways @mobile", async ({ page }) => {
     const site = await createSiteViaApi(page, "QueueCare");
     await seedJourneys(site.id, STEPS, [40, 30, 20]);
     await page.goto("/funnel");
