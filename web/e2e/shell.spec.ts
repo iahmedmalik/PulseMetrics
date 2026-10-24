@@ -32,6 +32,21 @@ test.describe("the shell", () => {
     await expect(current).toHaveAttribute("aria-current", "page");
   });
 
+  test("New site opens and focuses the creation form from another page @core", async ({ page }) => {
+    await page.goto("/ab");
+    await page.getByRole("link", { name: "New site", exact: true }).click();
+    await expect(page).toHaveURL(/\/#new-site-name$/);
+    const name = page.getByRole("textbox", { name: "Name it" });
+    await expect(name).toBeFocused();
+    await expect(name).toBeInViewport();
+    const header = await page.locator(".shell-header").boundingBox();
+    const field = await name.boundingBox();
+    expect(field!.y).toBeGreaterThanOrEqual(header!.y + header!.height);
+    await name.fill("New site action check");
+    await page.getByRole("button", { name: "Create site", exact: true }).click();
+    await expect(page.getByRole("article", { name: "New site action check", exact: true })).toBeVisible();
+  });
+
   test("uses the phone layout on a phone and the laptop layout on a laptop", async ({ page, isMobile }) => {
     await page.goto("/");
     const tabBar = page.locator(".tab-bar");

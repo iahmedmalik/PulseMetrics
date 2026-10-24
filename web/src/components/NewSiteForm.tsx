@@ -1,12 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 export function NewSiteForm({ first = false }: { first?: boolean }) {
   const router = useRouter();
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    function focusNameInput() {
+      if (window.location.hash !== "#new-site-name") return;
+
+      nameInputRef.current?.scrollIntoView({ block: "center" });
+      nameInputRef.current?.focus({ preventScroll: true });
+    }
+
+    focusNameInput();
+    window.addEventListener("hashchange", focusNameInput);
+    return () => window.removeEventListener("hashchange", focusNameInput);
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +53,7 @@ export function NewSiteForm({ first = false }: { first?: boolean }) {
       <h2>{first ? "Make your first site" : "Add a site"}</h2>
       <label>
         Name it
-        <input name="name" placeholder="for example QueueCare" maxLength={60} autoComplete="off" />
+        <input ref={nameInputRef} id="new-site-name" name="name" placeholder="for example QueueCare" maxLength={60} autoComplete="off" />
       </label>
       <div role="alert">{error && <p className="note bad">{error}</p>}</div>
       <button className="btn primary" type="submit" disabled={busy}>
