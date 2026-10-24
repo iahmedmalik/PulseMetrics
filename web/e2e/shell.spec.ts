@@ -95,6 +95,17 @@ test.describe("motion", () => {
     expect(name).toBe("enter");
   });
 
+  test("decorative pulse rings are stroke-only instead of filled disks @regression", async ({ page }) => {
+    await page.goto("/");
+    const rings = page.locator(".art .ring");
+    await expect(rings).toHaveCount(3);
+    for (const ring of await rings.all()) {
+      const style = await ring.evaluate((el) => ({ fill: getComputedStyle(el).fill, stroke: getComputedStyle(el).stroke }));
+      expect(style.fill).toBe("none");
+      expect(style.stroke).not.toBe("none");
+    }
+  });
+
   test("with reduced motion the page only fades, with no travel", async ({ browser }) => {
     const context = await browser.newContext({ reducedMotion: "reduce", baseURL: BASE });
     const page = await context.newPage();
@@ -104,6 +115,9 @@ test.describe("motion", () => {
     expect(name).toBe("fade");
     const pulseRuns = await page.locator(".pulse-bg path:not(.base)").first().evaluate((el) => getComputedStyle(el).display);
     expect(pulseRuns).toBe("none");
+    const ringStyle = await page.locator(".art .ring").first().evaluate((el) => ({ fill: getComputedStyle(el).fill, animation: getComputedStyle(el).animationName }));
+    expect(ringStyle.fill).toBe("none");
+    expect(ringStyle.animation).toBe("none");
     await context.close();
   });
 });

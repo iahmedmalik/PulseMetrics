@@ -260,6 +260,24 @@ h2 {
     stroke-dashoffset: 0;
   }
 }
+.art .ring {
+  fill: none;
+  stroke: var(--trace);
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: signal-ring 3.6s var(--ease) infinite;
+}
+@keyframes signal-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.15);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
 .pop {
   transform-box: fill-box;
   transform-origin: center;
@@ -517,6 +535,10 @@ select:focus {
   }
   .pulse-bg path:not(.base) {
     display: none;
+  }
+  .art .ring {
+    animation: none !important;
+    opacity: 0;
   }
 }
 @keyframes fade {
