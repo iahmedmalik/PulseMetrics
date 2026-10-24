@@ -66,17 +66,36 @@ test.describe("A v B calculator", () => {
     await expect(page.getByRole("status")).toContainText("Too few people to trust.");
   });
 
-  test("more people converting than saw the version is explained, not crashed on", async ({ page }) => {
+test("more conversions than visitors blocks the result until corrected @regression", async ({ page }) => {
     await fill(page, "100", "250", "100", "20");
-    await expect(page.getByText("That is more than the people who saw A. Counted as everyone.")).toBeVisible();
+    await expect(page.getByText("That is more than the people who saw A. Reduce this count.")).toBeVisible();
     await expect(page.getByLabel("Did the thing").first()).toHaveAttribute("aria-invalid", "true");
-    await expect(page.locator(".big")).toHaveText(/^p = /);
+    await expect(page.locator(".big")).toHaveText("p = –");
+    await expect(page.locator(".bell")).toHaveCount(0);
+    await expect(page.getByRole("status")).toContainText("Fix the counts.");
+    await page.getByLabel("Did the thing").first().fill("10");
+    await expect(page.getByLabel("Did the thing").first()).toHaveAttribute("aria-invalid", "false");
+    await expect(page.locator(".big")).not.toHaveText("p = –");
   });
 
-  test("letters, signs and blanks count as zero, with no error", async ({ page }) => {
-    await fill(page, "abc", "-5", "", "x");
+  test("invalid whole-number counts are explained and never silently changed", async ({ page }) => {
+    for (const input of ["abc", "-5", "1.5", "9007199254740992"]) {
+      await fill(page, input, "100", "1000", "120");
+      await expect(page.getByLabel("People who saw A")).toHaveAttribute("aria-invalid", "true");
+      await expect(page.getByLabel("People who saw A")).toHaveValue(input);
+      await expect(page.locator(".big")).toHaveText("p = –");
+      await expect(page.getByRole("status")).toContainText("Fix the counts.");
+      await expect(page.locator(".bell")).toHaveCount(0);
+    }
+    await fill(page, "1000", "100", "1000", "120");
+    await expect(page.locator(".big")).toHaveText("p = 0.153");
+  });
+
+  test("blank counts stay incomplete instead of being treated as zero", async ({ page }) => {
+    await fill(page, "1000", "", "1000", "120");
     await expect(page.locator(".big")).toHaveText("p = –");
     await expect(page.getByRole("status")).toContainText("Enter the numbers.");
+    await expect(page.getByLabel("Did the thing").first()).toHaveAttribute("aria-invalid", "false");
   });
 
   test("shows the bell curve with the tails once there is a result, and explains how to read it", async ({ page }) => {

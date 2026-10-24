@@ -11,7 +11,13 @@ const EXAMPLES: { label: string; fields: Fields }[] = [
   { label: "Too few people", fields: { av: "10", ac: "3", bv: "10", bc: "9" } },
 ];
 
-const whole = (s: string) => Math.max(0, Math.floor(Number(s) || 0));
+// A count stays incomplete when blank, and invalid input is never silently changed.
+const whole = (s: string): number | null => {
+  const value = s.trim();
+  if (!/^\d+$/.test(value)) return null;
+  const n = Number(value);
+  return Number.isSafeInteger(n) ? n : null;
+};
 const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
 const showP = (p: number) => (p < 0.001 ? "< 0.001" : p.toFixed(3));
 
@@ -66,14 +72,25 @@ export function AbCalculator() {
   const [f, setF] = useState<Fields>({ av: "", ac: "", bv: "", bc: "" });
   const set = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [key]: e.target.value });
 
-  const a = { visitors: whole(f.av), conversions: whole(f.ac) };
-  const b = { visitors: whole(f.bv), conversions: whole(f.bc) };
-  const overA = a.conversions > a.visitors;
-  const overB = b.conversions > b.visitors;
+  const counts = { av: whole(f.av), ac: whole(f.ac), bv: whole(f.bv), bc: whole(f.bc) };
+  const errors: Partial<Record<keyof Fields, string>> = {};
+  for (const key of Object.keys(f) as (keyof Fields)[]) {
+    if (f[key].trim() && counts[key] === null) {
+      errors[key] = /^\d+$/.test(f[key].trim()) ? "That count is too large to calculate reliably." : "Enter a whole number of people, zero or more.";
+    }
+  }
+  if (counts.av !== null && counts.ac !== null && counts.ac > counts.av) errors.ac = "That is more than the people who saw A. Reduce this count.";
+  if (counts.bv !== null && counts.bc !== null && counts.bc > counts.bv) errors.bc = "That is more than the people who saw B. Reduce this count.";
+  const hasErrors = Object.keys(errors).length > 0;
+  const complete = !hasErrors && Object.values(counts).every((n) => n !== null);
+  const a = { visitors: complete ? counts.av! : 0, conversions: complete ? counts.ac! : 0 };
+  const b = { visitors: complete ? counts.bv! : 0, conversions: complete ? counts.bc! : 0 };
   const cmp = compareProportions(a, b);
   const verdict = abVerdict(a, b);
-  const text = verdictText(verdict, cmp.pValue, cmp.difference);
-  const hasData = a.visitors > 0 && b.visitors > 0;
+  const text = hasErrors
+    ? { tone: "warn", head: "Fix the counts.", body: "Check the highlighted fields. Results appear once all four counts are complete and valid." }
+    : verdictText(verdict, cmp.pValue, cmp.difference);
+  const hasData = complete && a.visitors > 0 && b.visitors > 0;
   const scale = Math.max(cmp.rateA, cmp.rateB, 0.01);
 
   return (
@@ -87,36 +104,30 @@ export function AbCalculator() {
           <div className="fields">
             <label>
               People who saw A
-              <input inputMode="numeric" value={f.av} onChange={set("av")} placeholder="1000" />
+              <input inputMode="numeric" value={f.av} onChange={set("av")} placeholder="1000" aria-invalid={Boolean(errors.av)} aria-describedby={errors.av ? "ab-av-err" : undefined} />
             </label>
             <label>
               Did the thing
-              <input inputMode="numeric" value={f.ac} onChange={set("ac")} placeholder="100" aria-invalid={overA} aria-describedby={overA ? "ab-a-err" : undefined} />
+              <input inputMode="numeric" value={f.ac} onChange={set("ac")} placeholder="100" aria-invalid={Boolean(errors.ac)} aria-describedby={errors.ac ? "ab-ac-err" : undefined} />
             </label>
           </div>
-          {overA && (
-            <p className="note bad" id="ab-a-err">
-              That is more than the people who saw A. Counted as everyone.
-            </p>
-          )}
+          {errors.av && <p className="note bad" id="ab-av-err">{errors.av}</p>}
+          {errors.ac && <p className="note bad" id="ab-ac-err">{errors.ac}</p>}
         </fieldset>
         <fieldset className="ab-group">
           <legend>Version B</legend>
           <div className="fields">
             <label>
               People who saw B
-              <input inputMode="numeric" value={f.bv} onChange={set("bv")} placeholder="1000" />
+              <input inputMode="numeric" value={f.bv} onChange={set("bv")} placeholder="1000" aria-invalid={Boolean(errors.bv)} aria-describedby={errors.bv ? "ab-bv-err" : undefined} />
             </label>
             <label>
               Did the thing
-              <input inputMode="numeric" value={f.bc} onChange={set("bc")} placeholder="120" aria-invalid={overB} aria-describedby={overB ? "ab-b-err" : undefined} />
+              <input inputMode="numeric" value={f.bc} onChange={set("bc")} placeholder="120" aria-invalid={Boolean(errors.bc)} aria-describedby={errors.bc ? "ab-bc-err" : undefined} />
             </label>
           </div>
-          {overB && (
-            <p className="note bad" id="ab-b-err">
-              That is more than the people who saw B. Counted as everyone.
-            </p>
-          )}
+          {errors.bv && <p className="note bad" id="ab-bv-err">{errors.bv}</p>}
+          {errors.bc && <p className="note bad" id="ab-bc-err">{errors.bc}</p>}
         </fieldset>
         <div className="examples">
           <span className="hint">Try an example:</span>
