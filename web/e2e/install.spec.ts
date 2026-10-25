@@ -28,6 +28,22 @@ test("shows the snippet for this site, with its key and this dashboard's own add
     await expect(page.getByLabel("An event call")).toContainText('pulse.track("queue_joined");');
   });
 
+  test("keeps the install guidance cards structurally aligned @regression @mobile", async ({ page, isMobile }) => {
+    await createSiteViaApi(page, "QueueCare");
+    await page.goto("/install");
+    const check = page.getByRole("heading", { name: /3\. Check it works/i }).locator("..");
+    const naming = page.getByRole("heading", { name: /^Naming events/ }).locator("..");
+    const checkBox = await check.boundingBox();
+    const namingBox = await naming.boundingBox();
+    expect(checkBox).not.toBeNull();
+    expect(namingBox).not.toBeNull();
+    if (isMobile) {
+      expect(namingBox!.y).toBeGreaterThan(checkBox!.y + checkBox!.height);
+    } else {
+      expect(Math.abs(checkBox!.height - namingBox!.height)).toBeLessThanOrEqual(1);
+    }
+  });
+
   test("Copy puts the snippet on the clipboard", async ({ page, context, browserName }) => {
     test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);

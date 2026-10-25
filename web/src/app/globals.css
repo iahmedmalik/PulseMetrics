@@ -1303,7 +1303,6 @@ input[aria-invalid="true"] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
-  align-items: start;
 }
 .install-wide {
   grid-column: 1 / -1;
