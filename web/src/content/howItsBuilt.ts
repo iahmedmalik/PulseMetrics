@@ -6,8 +6,8 @@ export const COUNTS = {
   // vitest in packages/core, vitest in api (needs a real local Postgres), and Playwright test runs
   // (each test counted once per browser it runs in) as listed by `playwright test --list`
   coreTests: 103,
-  apiTests: 155,
-  browserRuns: 203,
+  apiTests: 158,
+  browserRuns: 131,
 };
 
 // The two paragraphs below are written from the project's verified facts (the PRD, the decisions made along the way).

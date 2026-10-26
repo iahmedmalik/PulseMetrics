@@ -64,6 +64,8 @@ Deletes events older than 180 days. It needs `Authorization: Bearer <CRON_SECRET
 
 ## 5. A first manual test, step by step
 
+Open the saved [tracking request collection](tracking.http) in an HTTP client that supports `.http` files, such as VS Code REST Client. Set `siteKey` to a development site's public key before sending the valid-event request. The collection contains no passwords or session cookies. A successful health check proves the API is running; the unknown-key request also checks the API's database connection.
+
 1. `POST /v1/track` with a made-up key → expect `404`. (The door is closed to strangers.)
 2. Sign up, make a site, copy its key.
 3. `POST /v1/track` with the real key, three different `name` values and the same `anon` → expect `204` each time.

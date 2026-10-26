@@ -1,0 +1,34 @@
+# Run with an HTTP request client such as VS Code REST Client.
+# Start the API first. These requests need no owner cookie.
+@api = http://localhost:4000
+# Replace with the public key from a site you created in the dashboard.
+@siteKey = REPLACE_WITH_YOUR_SITE_KEY
+@anon = lessonbrowser001
+
+### 1. API is running: expect 200. This does not check the database.
+GET {{api}}/health
+
+### 2. Dashboard requires sign-in: expect 401.
+GET {{api}}/v1/sites
+
+### 3. Well-formed but unknown key: expect 404 when the database is reachable.
+POST {{api}}/v1/track
+Content-Type: application/json
+
+{"key":"000000000000000000000000","anon":"{{anon}}","name":"queue_joined"}
+
+### 4. Extra fields are refused: expect 400 before the database is called.
+POST {{api}}/v1/track
+Content-Type: application/json
+
+{"key":"000000000000000000000000","anon":"{{anon}}","name":"queue_joined","page":"/private"}
+
+### 5. Real site key: expect 204 with an empty body.
+# Sends one test event to the selected site; use a development site.
+POST {{api}}/v1/track
+Content-Type: application/json
+
+{"key":"{{siteKey}}","anon":"{{anon}}","name":"queue_joined"}
+
+### 6. Wrong method: expect 405.
+GET {{api}}/v1/track
