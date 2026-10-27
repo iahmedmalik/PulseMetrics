@@ -22,7 +22,7 @@ export function Shell({ children, signedIn = true }: { children: ReactNode; sign
           {signedIn ? (
             <>
               <SignOutButton />
-              <a href="/#new-site-name" className="btn primary">
+              <a href="/#new-site-name" className="btn header-new">
                 New site
               </a>
             </>

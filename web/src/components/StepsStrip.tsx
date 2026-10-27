@@ -4,6 +4,18 @@ type State = "done" | "now" | "later";
 
 // Three first steps, drawn from what is true: a site exists, then the first event arrives.
 export function StepsStrip({ hasSite, hasEvents, siteName }: { hasSite: boolean; hasEvents: boolean; siteName?: string }) {
+  // Once events arrive all three are done: one short line instead of three cards, so the sites come first.
+  if (hasEvents) {
+    return (
+      <p className="step done steps-live">
+        <b aria-hidden="true">{icons.check}</b>
+        <span>
+          <strong>You are live</strong>
+          All three first steps are done and events are arriving.
+        </span>
+      </p>
+    );
+  }
   const steps: { title: string; text: string; state: State }[] = [
     { title: "Make a site", text: "Name it, get a key", state: hasSite ? "done" : "now" },
     {

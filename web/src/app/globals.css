@@ -532,8 +532,9 @@ select:focus {
     gap: 10px;
     padding: 0 14px;
   }
+  /* on a phone the header keeps only its main action: Sign in, or New site (the rest are in More) */
   .main-nav,
-  .header-actions .btn:not(.primary) {
+  .header-actions .btn:not(.primary):not(.header-new) {
     display: none;
   }
   .logo {
@@ -660,6 +661,14 @@ select:focus {
 .step b svg {
   width: 18px;
   height: 18px;
+}
+.steps-live {
+  margin: 0 0 18px;
+  padding: 10px 16px;
+}
+.steps-live strong {
+  display: inline;
+  margin-right: 8px;
 }
 .step.done b {
   border-color: var(--bar);

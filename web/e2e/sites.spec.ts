@@ -99,7 +99,9 @@ test("replacing the key asks first, then the old key stops working and the new o
     const card = page.getByRole("article", { name: "Busy app" });
     await expect(card.getByText("live today")).toBeVisible();
     await expect(card.getByText(/· 1 event$/)).toBeVisible();
-    await expect(page.locator(".step.done")).toHaveCount(3);
+    // all three first steps are done: one short line instead of three cards (#36)
+    await expect(page.locator(".steps-live")).toContainText("You are live");
+    await expect(page.locator("ol.steps")).toHaveCount(0);
   });
 
 test("deleting a site asks first, then removes it and every event", async ({ page }) => {

@@ -34,7 +34,10 @@ test.describe("the shell", () => {
 
   test("New site opens and focuses the creation form from another page @smoke @regression", async ({ page }) => {
     await page.goto("/ab");
-    await page.getByRole("link", { name: "New site", exact: true }).click();
+    const newSite = page.getByRole("link", { name: "New site", exact: true });
+    // an outline button, so the page's own main action is the only amber one (#36)
+    await expect(newSite).not.toHaveClass(/primary/);
+    await newSite.click();
     await expect(page).toHaveURL(/\/#new-site-name$/);
     const name = page.getByRole("textbox", { name: "Name it" });
     await expect(name).toBeFocused();
