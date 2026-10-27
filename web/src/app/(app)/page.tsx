@@ -4,6 +4,7 @@ import { SiteCard } from "@/components/SiteCard";
 import { StepsStrip } from "@/components/StepsStrip";
 import { OvalArt } from "@/components/art";
 import { getSites } from "@/lib/current-site";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Your sites" };
 
@@ -15,7 +16,7 @@ export default async function SitesPage() {
     <section>
       <div className="hero">
         <div>
-          <h1>Your sites</h1>
+          <FlipText text="Your sites" />
           <p className="sub">Each site gets a key and a snippet. Pick one to see its innings.</p>
         </div>
         <OvalArt sites={sites.map((s) => s.name)} />

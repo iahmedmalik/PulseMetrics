@@ -10,6 +10,7 @@ import { SiteSwitcher } from "@/components/SiteSwitcher";
 import { StepsPicker } from "@/components/StepsPicker";
 import { ApiDown, apiFetch } from "@/lib/api";
 import { getCurrentSite } from "@/lib/current-site";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Funnel" };
 
@@ -39,7 +40,7 @@ export default async function FunnelPage({ searchParams }: { searchParams: Promi
     <>
       <div className="hero">
         <div>
-          <h1>Funnel</h1>
+          <FlipText text="Funnel" />
           <p className="sub">Who walks on, and who leaves at each step. Steps count people, in order, in the last {range} days.</p>
         </div>
         <FunnelArt />

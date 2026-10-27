@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignOutButton } from "@/components/SignOutButton";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "More" };
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = { title: "More" };
 export default function MorePage() {
   return (
     <section>
-      <h1>More</h1>
+      <FlipText text="More" />
       <ul className="more-list">
         <li>
           <Link href="/install">Install the snippet</Link>

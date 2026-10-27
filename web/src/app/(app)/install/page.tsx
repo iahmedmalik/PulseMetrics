@@ -11,6 +11,7 @@ import { SiteSwitcher } from "@/components/SiteSwitcher";
 import { apiFetch } from "@/lib/api";
 import { getCurrentSite } from "@/lib/current-site";
 import { snippetFor } from "@/lib/sites";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Install" };
 
@@ -37,7 +38,7 @@ export default async function InstallPage() {
     <section>
       <div className="hero">
         <div>
-          <h1>Install</h1>
+          <FlipText text="Install" />
           <p className="sub">One script tag, then one line per event. Named events only: nothing about the visitor leaves their browser.</p>
         </div>
         <PipelineArt />

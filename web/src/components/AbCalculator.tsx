@@ -154,8 +154,11 @@ export function AbCalculator() {
         </p>
         <p className="big num">p = {hasData ? showP(cmp.pValue) : "–"}</p>
         {hasData && <Bell z={cmp.z} />}
-        <div className={`verdict ${text.tone}`} role="status">
-          <b>{text.head}</b> {text.body}
+        {/* the live region stays put so screen readers announce changes; the box inside re-enters when the verdict changes */}
+        <div role="status">
+          <div className={`verdict ${text.tone}`} key={text.tone}>
+            <b>{text.head}</b> {text.body}
+          </div>
         </div>
       </div>
 

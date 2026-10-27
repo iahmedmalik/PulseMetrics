@@ -30,23 +30,26 @@ export function InstallStatus({ siteId, firstEvent }: { siteId: string; firstEve
     };
   }, [siteId, event]);
 
+  // The live region stays put so screen readers announce "It works"; the box inside re-enters when it changes.
   return (
-    <div className={`status ${event ? "ok" : "waiting"}`} role="status">
-      {event ? (
-        <>
-          <span className="status-dot done" aria-hidden="true" />
-          <div>
-            <b>It works.</b> The first event, “{eventLabel(event.name)}”, has arrived. <Link href="/innings">See the innings</Link>.
-          </div>
-        </>
-      ) : (
-        <>
-          <span className="status-dot" aria-hidden="true" />
-          <div>
-            <b>Waiting for the first event…</b> Open your app and do the thing you are tracking. This page notices by itself.
-          </div>
-        </>
-      )}
+    <div role="status">
+      <div className={`status ${event ? "ok" : "waiting"}`} key={event ? "ok" : "waiting"}>
+        {event ? (
+          <>
+            <span className="status-dot done" aria-hidden="true" />
+            <div>
+              <b>It works.</b> The first event, “{eventLabel(event.name)}”, has arrived. <Link href="/innings">See the innings</Link>.
+            </div>
+          </>
+        ) : (
+          <>
+            <span className="status-dot" aria-hidden="true" />
+            <div>
+              <b>Waiting for the first event…</b> Open your app and do the thing you are tracking. This page notices by itself.
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -91,7 +91,7 @@ test.describe("motion", () => {
 
   test("the page rises in with the shared enter animation", async ({ page }) => {
     await page.goto("/");
-    const name = await page.locator(".page").first().evaluate((el) => getComputedStyle(el).animationName);
+    const name = await page.locator(".content").first().evaluate((el) => getComputedStyle(el).animationName);
     expect(name).toBe("enter");
   });
 
@@ -111,7 +111,7 @@ test.describe("motion", () => {
     const page = await context.newPage();
     await signUpViaApi(page);
     await page.goto("/");
-    const name = await page.locator(".page").first().evaluate((el) => getComputedStyle(el).animationName);
+    const name = await page.locator(".content").first().evaluate((el) => getComputedStyle(el).animationName);
     expect(name).toBe("fade");
     const pulseRuns = await page.locator(".pulse-bg path:not(.base)").first().evaluate((el) => getComputedStyle(el).display);
     expect(pulseRuns).toBe("none");

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
 import { OvalArt } from "@/components/art";
 import { getMe } from "@/lib/api";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -13,7 +14,7 @@ export default async function SignInPage() {
   return (
     <section className="hero">
       <div>
-        <h1>Sign in</h1>
+        <FlipText text="Sign in" />
         <p className="sub">See how your apps are doing. Only you see your sites.</p>
         <div className="auth-wrap">
           <AuthForm mode="sign-in" />

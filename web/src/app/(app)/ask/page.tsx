@@ -4,6 +4,7 @@ import { NoSite } from "@/components/NoSite";
 import { SiteSwitcher } from "@/components/SiteSwitcher";
 import { ApiDown, apiFetch } from "@/lib/api";
 import { getCurrentSite } from "@/lib/current-site";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Ask" };
 
@@ -19,7 +20,7 @@ export default async function AskPage() {
     <section>
       <div className="hero">
         <div>
-          <h1>Ask</h1>
+          <FlipText text="Ask" />
           <p className="sub">Ask a question about {site.name} in plain words. The answer is worked out from your own reports, and you can see which ones it used.</p>
         </div>
       </div>

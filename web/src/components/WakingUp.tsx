@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { FlipText } from "./FlipText";
 
 // Shown while the API wakes up (the free plan puts it to sleep after 15 quiet minutes, and waking takes
 // about a minute). It tries again by itself every few seconds, so nobody has to press anything.
@@ -15,7 +16,7 @@ export function WakingUp() {
   return (
     <section className="hero" aria-live="polite">
       <div>
-        <h1>Waking up</h1>
+        <FlipText text="Waking up" />
         <p className="sub">
           The server sleeps when nobody is using it and takes about a minute to wake. This page tries again by itself.
         </p>

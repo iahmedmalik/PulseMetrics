@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArchitectureDiagram } from "@/components/ArchitectureDiagram";
 import { BuildArt } from "@/components/BuildArt";
 import { COUNTS, CREDITS, DECISIONS, HONEST_LIMITS, LINKS, PROBLEM, STACK, THE_STORY, WHO_BUILT_IT } from "@/content/howItsBuilt";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "How it's built", description: "Who built PulseMetrics, why, with what, and how it is tested." };
 
@@ -11,7 +12,7 @@ export default function HowItsBuiltPage() {
     <section>
       <div className="hero">
         <div>
-          <h1>How it&apos;s built</h1>
+          <FlipText text="How it's built" />
           <p className="sub">Who built it, why, with what, and how it is tested.</p>
         </div>
         <BuildArt />

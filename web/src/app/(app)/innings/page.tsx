@@ -10,6 +10,7 @@ import { RollingNumber } from "@/components/RollingNumber";
 import { SiteSwitcher } from "@/components/SiteSwitcher";
 import { ApiDown, apiFetch } from "@/lib/api";
 import { getCurrentSite } from "@/lib/current-site";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Innings" };
 
@@ -31,7 +32,7 @@ export default async function InningsPage({ searchParams }: { searchParams: Prom
     <section>
       <div className="hero">
         <div>
-          <h1>{site.name}</h1>
+          <FlipText text={site.name} />
           <p className="sub">
             {s.hasData && s.busiest
               ? `Busiest day: ${dayLabel(s.busiest.day)}, with ${s.busiest.people} ${s.busiest.people === 1 ? "browser" : "browsers"}. So far today: ${s.today}.`

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { OvalArt } from "./art";
+import { FlipText } from "./FlipText";
 
 // Shown by the pages that need a site (Innings, Funnel, Install, Ask) when the owner has none yet.
 export function NoSite({ title }: { title: string }) {
@@ -7,7 +8,7 @@ export function NoSite({ title }: { title: string }) {
     <section>
       <div className="hero">
         <div>
-          <h1>{title}</h1>
+          <FlipText text={title} />
           <p className="sub">Make a site first. It takes a name and a click, and gives you the snippet to paste.</p>
           <p style={{ marginTop: 18 }}>
             <Link href="/" className="btn primary">

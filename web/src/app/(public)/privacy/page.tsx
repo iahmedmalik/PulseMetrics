@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { NeverStored } from "@/components/NeverStored";
 import { ShieldArt } from "@/components/ShieldArt";
+import { FlipText } from "@/components/FlipText";
 
 export const metadata: Metadata = { title: "Privacy", description: "What PulseMetrics stores about visitors and owners, what it never stores, and how long it keeps it." };
 
@@ -10,7 +11,7 @@ export default function PrivacyPage() {
     <section>
       <div className="hero">
         <div>
-          <h1>Privacy</h1>
+          <FlipText text="Privacy" />
           <p className="sub">PulseMetrics was built to count what happens in an app without learning who did it. This page says exactly what that means.</p>
           <p className="updated">Last updated 21 October 2026</p>
         </div>
