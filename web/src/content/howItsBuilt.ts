@@ -37,7 +37,7 @@ export const DECISIONS = [
   { title: "Nothing private can get in", text: "The event is exactly three fields. The server refuses any other field, the event name must match a pattern the database enforces too, and tests prove no address, token, name, phone or email is ever stored." },
   { title: "Owners only see their own data", text: "Every dashboard request tells the database who is signed in, and row-level security hides everyone else's rows. The public tracking route runs as a separate database role that can run one function and nothing else." },
   { title: "Honest statistics", text: "The A/B calculator never says a version won unless p is under 0.05 and the sample is big enough, and it explains that the p-value is not the chance that a version is better. The funnel warns when fewer than 30 people started." },
-  { title: "Built for free hosting that sleeps", text: "The API sleeps after 15 quiet minutes. A free pinger keeps it awake, the dashboard shows a waking-up state, and the snippet times out after 5 seconds and retries the event names on the next page view." },
+  { title: "Built for free hosting that sleeps", text: "The API sleeps after 15 quiet minutes. A free pinger keeps it awake from 9 am to 6 pm Pakistan time, the dashboard shows a waking-up state, and the snippet times out after 5 seconds and retries the event names on the next page view." },
   { title: "Days follow Pakistan time", text: "Daily counts split at midnight in Pakistan (UTC+5), and a test pins the exact boundary at 19:00 UTC." },
 ];
 

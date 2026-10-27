@@ -66,7 +66,7 @@ PulseMetrics never stores a page address, query string, token, name, phone numbe
 | Public endpoint abused or flooded | rate limit, size cap, name pattern, key check, cheap to reject |
 | Misleading statistics (peeking, small n) | small-sample warning, verdict wording, explanation text |
 | Touching released apps breaks them | snippet never throws; one commit per app; smoke set before and after |
-| Free tiers sleep: Render API after 15 minutes idle (about a minute to wake), Neon compute after 5 minutes; 1 GB storage | external pinger keeps the API awake (uses about 730 of 750 free hours); snippet never waits, times out at 5 s and retries unsent names on the next page view; 180-day retention and a per-site event cap; friendly waking-up state on the dashboard |
+| Free tiers sleep: Render API after 15 minutes idle (about a minute to wake), Neon compute after 5 minutes; 1 GB storage | external pinger keeps the API awake from 9 am to 6 pm Pakistan time (about 285 of 750 free hours a month) and lets it sleep overnight; snippet never waits, times out at 5 s and retries unsent names on the next page view; 180-day retention and a per-site event cap; friendly waking-up state on the dashboard |
 | Schedule (plan ends 26 Oct) | AI feature cut first; record the slip honestly |
 | Day boundary confusion | Pakistan time, stated on the chart |
 
