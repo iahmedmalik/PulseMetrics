@@ -2,7 +2,7 @@
 
 Product analytics for small apps. A tiny snippet sends named events, and you see where people drop off (funnel), how many browsers are active each day, and whether version B really beat version A, with a p-value and a plain-English verdict. No cookies, no page addresses, no personal data.
 
-**Status:** v1 prototype, built and tested locally. Not deployed yet, so there are no live links in this README. Nobody outside the author has used it, and no usage figures are claimed.
+**Live:** [pulsemetrics-delta.vercel.app](https://pulsemetrics-delta.vercel.app) (dashboard on Vercel, API on Render's free tier, so the first request after a quiet spell can be slow). **Status:** v1, deployed; the v1.0 release checks on the live system are still to come. No usage figures are claimed.
 
 ## What it does
 

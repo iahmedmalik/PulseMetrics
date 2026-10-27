@@ -37,15 +37,15 @@ test("links to the repository, README, PRD and test report @regression", async (
     const hrefs = await page.getByRole("list").filter({ has: page.getByRole("link", { name: "Source code on GitHub" }) }).getByRole("link").evaluateAll((a) => a.map((x) => (x as HTMLAnchorElement).href));
     expect(hrefs).toEqual(
       expect.arrayContaining([
-        "https://github.com/ahmed-malikk/PulseMetrics",
-        "https://github.com/ahmed-malikk/PulseMetrics#readme",
-        "https://github.com/ahmed-malikk/PulseMetrics/blob/main/docs/PRD.md",
-        "https://github.com/ahmed-malikk/PulseMetrics/blob/main/docs/TEST-REPORT.md",
+        "https://github.com/iahmedmalik/PulseMetrics",
+        "https://github.com/iahmedmalik/PulseMetrics#readme",
+        "https://github.com/iahmedmalik/PulseMetrics/blob/main/docs/PRD.md",
+        "https://github.com/iahmedmalik/PulseMetrics/blob/main/docs/TEST-REPORT.md",
       ]),
     );
     // Windows resolves paths without checking case; GitHub requires the exact tracked spelling.
     for (const href of hrefs) {
-      const prefix = "https://github.com/ahmed-malikk/PulseMetrics/blob/main/";
+      const prefix = "https://github.com/iahmedmalik/PulseMetrics/blob/main/";
       if (!href.startsWith(prefix)) continue;
       let directory = resolve(__dirname, "../..");
       for (const segment of href.slice(prefix.length).split("/")) {

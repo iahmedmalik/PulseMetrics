@@ -84,7 +84,7 @@ export default function PrivacyPage() {
         </div>
 
         <p className="hint">
-          Questions or concerns: open an issue on the <a href="https://github.com/ahmed-malikk/PulseMetrics/issues">project page</a>. Back to <Link href="/how-its-built">how it is built</Link>.
+          Questions or concerns: open an issue on the <a href="https://github.com/iahmedmalik/PulseMetrics/issues">project page</a>. Back to <Link href="/how-its-built">how it is built</Link>.
         </p>
       </div>
     </section>

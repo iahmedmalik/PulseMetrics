@@ -1,6 +1,6 @@
 // Everything on the "How it's built" page. Numbers come from the real test runs and are refreshed at release.
 
-export const REPO = "https://github.com/ahmed-malikk/PulseMetrics";
+export const REPO = "https://github.com/iahmedmalik/PulseMetrics";
 
 export const COUNTS = {
   // vitest in packages/core, vitest in api (needs a real local Postgres), and Playwright test runs
