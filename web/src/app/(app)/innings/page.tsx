@@ -39,7 +39,7 @@ export default async function InningsPage({ searchParams }: { searchParams: Prom
               : "Nothing has arrived yet. Paste the snippet into your app and the first events will show up here."}
           </p>
         </div>
-        <HeroArt />
+        <HeroArt values={daily.days.map((d) => d.people)} />
       </div>
 
       <div className="toolbar">

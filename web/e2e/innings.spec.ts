@@ -57,7 +57,10 @@ test("with no site, the page says to make one", async ({ page }) => {
     await expect(page.getByText("Nothing has arrived yet")).toBeVisible();
     await expect(page.getByRole("link", { name: "Install the snippet" })).toBeVisible();
     await expect(cellValue(page, "Active today")).toHaveText("0");
-    await expect(page.locator(".bar")).toHaveCount(13); // only the heading drawing, no chart
+    // no chart, and the heading drawing is an empty plate: no bars, no pen trace, the ball waiting at the start (#35)
+    await expect(page.locator(".bar")).toHaveCount(0);
+    await expect(page.locator(".hero .art")).toHaveAttribute("data-empty", "true");
+    await expect(page.locator(".hero .art .draw")).toHaveCount(0);
   });
 
 test("shows today, the busiest day and the average from real events", async ({ page }) => {
@@ -97,6 +100,23 @@ test("shows today, the busiest day and the average from real events", async ({ p
     await expect(table.getByRole("row", { name: new RegExp(`${label(daysAgo(0))} \\(so far\\)\\s+2`) })).toBeVisible();
     await page.getByRole("button", { name: "Hide the table" }).click();
     await expect(page.getByRole("table")).toBeHidden();
+  });
+
+  test("the heading drawing follows the real days: a busier day draws a taller bar (#35)", async ({ page }) => {
+    const site = await createSiteViaApi(page, "QueueCare");
+    await addDay(site.id, 0, 2);
+    await addDay(site.id, 1, 6);
+    await addDay(site.id, 2, 3);
+    await page.goto("/innings");
+
+    const bars = page.locator(".hero .art .bar");
+    await expect(bars).toHaveCount(14); // one per day in the range, quiet days drawn at zero height
+    const heights = await bars.evaluateAll((els) => els.map((el) => Number(el.getAttribute("height"))));
+    expect(heights.slice(0, 11).every((h) => h === 0)).toBe(true);
+    const [twoAgo, yesterday, today] = heights.slice(11);
+    expect(yesterday).toBeGreaterThan(twoAgo!);
+    expect(twoAgo).toBeGreaterThan(today!);
+    await expect(page.locator(".hero .art")).not.toHaveAttribute("data-empty", /.*/);
   });
 
   test("the range tabs switch between 7, 14 and 30 days and the choice is in the address", async ({ page }) => {
