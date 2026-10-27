@@ -34,10 +34,11 @@ test.describe("the shell", () => {
       await expect(tabs.getByRole("link")).toHaveCount(5);
     } else {
       const nav = page.getByRole("navigation", { name: "Main" }).first();
-      // Ask is marked "Soon" while it is switched off, as it is on the test stack (#37)
-      for (const label of ["Sites", "Innings", "Funnel", "A v B", "Install", "Ask Soon"]) {
+      for (const label of ["Sites", "Innings", "Funnel", "A v B", "Install"]) {
         await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
       }
+      // Ask reads "Ask Soon" while it is switched off (the local test stack has no key) and "Ask" where it is on (#37)
+      await expect(nav.getByRole("link", { name: /^Ask( Soon)?$/ })).toBeVisible();
     }
   });
 
