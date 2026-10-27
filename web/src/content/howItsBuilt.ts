@@ -7,7 +7,7 @@ export const COUNTS = {
   // (each test counted once per browser it runs in) as listed by `playwright test --list`
   coreTests: 103,
   apiTests: 158,
-  browserRuns: 131,
+  browserRuns: 142,
 };
 
 // The two paragraphs below are written from the project's verified facts (the PRD, the decisions made along the way).
