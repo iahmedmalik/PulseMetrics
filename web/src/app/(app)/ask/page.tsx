@@ -21,7 +21,11 @@ export default async function AskPage() {
       <div className="hero">
         <div>
           <FlipText text="Ask" />
-          <p className="sub">Ask a question about {site.name} in plain words. The answer is worked out from your own reports, and you can see which ones it used.</p>
+          <p className="sub">
+            {status.enabled
+              ? `Ask a question about ${site.name} in plain words. The answer is worked out from your own reports, and you can see which ones it used.`
+              : `Soon you will be able to ask about ${site.name} in plain words, with answers worked out from your own reports.`}
+          </p>
         </div>
       </div>
       <div className="toolbar">

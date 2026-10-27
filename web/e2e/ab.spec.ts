@@ -21,6 +21,12 @@ test.describe("A v B calculator", () => {
     await expect(page.getByRole("heading", { level: 1, name: "A v B" })).toBeVisible();
     await expect(page.locator(".big")).toHaveText("p = –");
     await expect(page.getByRole("status")).toContainText("Enter the numbers.");
+    // the fields look empty (no grey numbers that read as typed in); the examples fill them (#37)
+    for (const input of await page.locator(".ab input").all()) {
+      await expect(input).toHaveValue("");
+      await expect(input).not.toHaveAttribute("placeholder", /.+/);
+    }
+    await expect(page.getByText("Try an example:")).toBeVisible();
   });
 
   test("10% v 12% with 1,000 each: p = 0.153 and it does NOT call B the winner @smoke", async ({ page }) => {

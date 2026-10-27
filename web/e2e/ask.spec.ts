@@ -20,8 +20,11 @@ test.describe("ask", () => {
     await createSiteViaApi(page, "QueueCare");
     await page.goto("/ask");
     await expect(page.getByRole("heading", { level: 1, name: "Ask" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Not set up yet" })).toBeVisible();
-    await expect(page.getByText("no key for the question service")).toBeVisible();
+    // owner words, and where the same answers are today (#37)
+    await expect(page.getByRole("heading", { name: "Coming soon" })).toBeVisible();
+    await expect(page.getByText("isn't switched on yet")).toBeVisible();
+    await expect(page.locator(".card").getByRole("link", { name: "Funnel" })).toHaveAttribute("href", "/funnel");
+    await expect(page.locator(".card").getByRole("link", { name: "Innings" })).toHaveAttribute("href", "/innings");
     await expect(page.getByRole("button", { name: "Ask", exact: true })).toHaveCount(0);
   });
 

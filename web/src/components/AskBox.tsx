@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 const EXAMPLES = ["Where do people drop off?", "How busy was the last week?", "Which events has this site sent?"];
@@ -25,8 +26,11 @@ export function AskBox({ siteId, siteName, enabled, limit, used: usedAtLoad }: {
   if (!enabled) {
     return (
       <div className="card">
-        <h2>Not set up yet</h2>
-        <p className="note">Asking questions is switched off on this server, because no key for the question service has been added. Everything else in PulseMetrics works without it.</p>
+        <h2>Coming soon</h2>
+        <p className="note">
+          Asking questions in plain words isn&apos;t switched on yet. Until it is, the same answers are one click away: where people drop off is on the{" "}
+          <Link href="/funnel">Funnel</Link>, and how many come each day is on <Link href="/innings">Innings</Link>.
+        </p>
       </div>
     );
   }

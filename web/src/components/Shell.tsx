@@ -5,7 +5,7 @@ import { SignOutButton } from "./SignOutButton";
 import { FieldRings, LogoMark, PulseBackdrop } from "./PulseBackdrop";
 
 // The frame around every page: header with the pulse line, content, footer, and the phone tab bar.
-export function Shell({ children, signedIn = true }: { children: ReactNode; signedIn?: boolean }) {
+export function Shell({ children, signedIn = true, askOn = false }: { children: ReactNode; signedIn?: boolean; askOn?: boolean }) {
   return (
     <>
       <header className="shell-header">
@@ -14,7 +14,7 @@ export function Shell({ children, signedIn = true }: { children: ReactNode; sign
           <LogoMark />
           PulseMetrics
         </Link>
-        {signedIn && <MainNav />}
+        {signedIn && <MainNav askOn={askOn} />}
         <div className="header-actions">
           <Link href="/how-its-built" className="btn">
             How it&apos;s built

@@ -9,6 +9,21 @@ test.describe("the shell", () => {
     await signUpViaApi(page);
   });
 
+  test("a slow page shows that it is loading, with the header still in place (#37) @mobile", async ({ page }) => {
+    await page.goto("/");
+    // hold back the page's own data (not the prefetch), as a slow or waking API would
+    await page.route(/\/innings(\?|$)/, async (route) => {
+      const h = route.request().headers();
+      if (h["rsc"] && !h["next-router-prefetch"]) await new Promise((r) => setTimeout(r, 2500));
+      await route.continue();
+    });
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Innings" }).locator("visible=true").first().click();
+    await expect(page.getByRole("status").filter({ hasText: "Fetching the numbers" })).toBeVisible();
+    await expect(page.locator(".shell-header")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Innings" })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Fetching the numbers")).toHaveCount(0);
+  });
+
   test("shows the brand, the page heading and the navigation @smoke", async ({ page, isMobile }) => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "PulseMetrics" }).first()).toBeVisible();
@@ -19,7 +34,8 @@ test.describe("the shell", () => {
       await expect(tabs.getByRole("link")).toHaveCount(5);
     } else {
       const nav = page.getByRole("navigation", { name: "Main" }).first();
-      for (const label of ["Sites", "Innings", "Funnel", "A v B", "Install", "Ask"]) {
+      // Ask is marked "Soon" while it is switched off, as it is on the test stack (#37)
+      for (const label of ["Sites", "Innings", "Funnel", "A v B", "Install", "Ask Soon"]) {
         await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
       }
     }

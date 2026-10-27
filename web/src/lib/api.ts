@@ -37,3 +37,13 @@ export async function getMe(): Promise<Me | null> {
   if (!res.ok) throw new ApiDown();
   return (await res.json()) as Me;
 }
+
+/** Whether "Ask your data" is switched on, so the menus can mark it "Soon" while it is not. */
+export async function askIsOn(): Promise<boolean> {
+  try {
+    const res = await apiFetch("/v1/ask/status");
+    return res.ok && ((await res.json()) as { enabled: boolean }).enabled;
+  } catch {
+    return false;
+  }
+}

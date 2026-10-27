@@ -104,11 +104,11 @@ export function AbCalculator() {
           <div className="fields">
             <label>
               People who saw A
-              <input inputMode="numeric" value={f.av} onChange={set("av")} placeholder="1000" aria-invalid={Boolean(errors.av)} aria-describedby={errors.av ? "ab-av-err" : undefined} />
+              <input inputMode="numeric" value={f.av} onChange={set("av")} aria-invalid={Boolean(errors.av)} aria-describedby={errors.av ? "ab-av-err" : undefined} />
             </label>
             <label>
               Did the thing
-              <input inputMode="numeric" value={f.ac} onChange={set("ac")} placeholder="100" aria-invalid={Boolean(errors.ac)} aria-describedby={errors.ac ? "ab-ac-err" : undefined} />
+              <input inputMode="numeric" value={f.ac} onChange={set("ac")} aria-invalid={Boolean(errors.ac)} aria-describedby={errors.ac ? "ab-ac-err" : undefined} />
             </label>
           </div>
           {errors.av && <p className="note bad" id="ab-av-err">{errors.av}</p>}
@@ -119,11 +119,11 @@ export function AbCalculator() {
           <div className="fields">
             <label>
               People who saw B
-              <input inputMode="numeric" value={f.bv} onChange={set("bv")} placeholder="1000" aria-invalid={Boolean(errors.bv)} aria-describedby={errors.bv ? "ab-bv-err" : undefined} />
+              <input inputMode="numeric" value={f.bv} onChange={set("bv")} aria-invalid={Boolean(errors.bv)} aria-describedby={errors.bv ? "ab-bv-err" : undefined} />
             </label>
             <label>
               Did the thing
-              <input inputMode="numeric" value={f.bc} onChange={set("bc")} placeholder="120" aria-invalid={Boolean(errors.bc)} aria-describedby={errors.bc ? "ab-bc-err" : undefined} />
+              <input inputMode="numeric" value={f.bc} onChange={set("bc")} aria-invalid={Boolean(errors.bc)} aria-describedby={errors.bc ? "ab-bc-err" : undefined} />
             </label>
           </div>
           {errors.bv && <p className="note bad" id="ab-bv-err">{errors.bv}</p>}

@@ -31,13 +31,14 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function MainNav() {
+export function MainNav({ askOn }: { askOn: boolean }) {
   const pathname = usePathname();
   return (
     <nav className="main-nav" aria-label="Main">
       {NAV.map((n) => (
         <Link key={n.href} href={n.href} aria-current={isActive(pathname, n.href) ? "page" : undefined}>
           {n.label}
+          {n.href === "/ask" && !askOn && <> <small className="soon">Soon</small></>}
         </Link>
       ))}
     </nav>
