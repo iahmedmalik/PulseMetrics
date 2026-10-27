@@ -58,7 +58,7 @@ export function FunnelShape({ shape }: { shape: Shape }) {
         ));
       })}
       {shape.steps.map((s, i) => (
-        <g key={s.step} className="pop" style={{ animationDelay: `${0.3 + i * 0.2}s` }}>
+        <g key={s.step} className="pop" style={{ animationDelay: `${0.15 + i * 0.08}s` }}>
           <text className="flab" x={xs[i]} y={CY + 7} textAnchor="middle">
             {s.people.toLocaleString("en")}
           </text>
@@ -71,7 +71,7 @@ export function FunnelShape({ shape }: { shape: Shape }) {
         const i = k + 1;
         if (s.left <= 0) return null;
         return (
-          <text key={s.step} className="fred pop" style={{ animationDelay: `${0.9 + i * 0.2}s` }} x={(xs[i - 1]! + xs[i]!) / 2} y="312" textAnchor="middle">
+          <text key={s.step} className="fred pop" style={{ animationDelay: `${0.45 + i * 0.08}s` }} x={(xs[i - 1]! + xs[i]!) / 2} y="312" textAnchor="middle">
             −{s.left.toLocaleString("en")} left{s.ofPrevious !== null ? ` (${100 - s.ofPrevious}%)` : ""}
           </text>
         );

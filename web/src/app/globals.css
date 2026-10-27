@@ -25,6 +25,9 @@
   --acc: #ebb53f;
   --acc-t: #f4cf7c;
   --on-acc: #14160f;
+  --on-danger: #1a0507;
+  /* the chart tooltip: near-black glass over the plate */
+  --tip: #000d;
 
   /* motion tokens */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -959,7 +962,7 @@ select:focus {
   position: absolute;
   pointer-events: none;
   padding: 4px 9px;
-  background: #000d;
+  background: var(--tip);
   border: 1px solid var(--line);
   border-radius: 8px;
   font: 500 13px var(--font-mono);
@@ -1511,7 +1514,7 @@ input[aria-invalid="true"] {
 .btn.danger {
   background: var(--trace);
   border-color: var(--trace);
-  color: #1a0507;
+  color: var(--on-danger);
 }
 .btn.danger:hover {
   background: var(--trace-t);
@@ -1711,4 +1714,13 @@ input[aria-invalid="true"] {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   vertical-align: 2px;
+}
+
+/* phone: every button and field is at least a 44 px touch target */
+@media (max-width: 760px) {
+  .btn,
+  input,
+  select {
+    min-height: 44px;
+  }
 }
